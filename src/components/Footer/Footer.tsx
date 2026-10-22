@@ -3,11 +3,7 @@ import { ShieldCheck } from 'lucide-react'
 import { APP_CONFIG } from '../../config/appConfig'
 import styles from './Footer.module.css'
 
-interface FooterProps {
-  onOpenShortcuts: () => void
-}
-
-export const Footer: React.FC<FooterProps> = ({ onOpenShortcuts }) => {
+export const Footer: React.FC = () => {
   return (
     <footer className={styles.footer}>
       <div className={styles.leftSection}>
@@ -15,16 +11,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenShortcuts }) => {
           <ShieldCheck size={13} aria-hidden="true" />
           <span>Local-first • Private</span>
         </span>
-
-        <button
-          type="button"
-          className={styles.shortcutHint}
-          onClick={onOpenShortcuts}
-          aria-label="Open keyboard shortcuts"
-        >
-          <span>Shortcuts</span>
-          <span className={styles.shortcutKey}>?</span>
-        </button>
       </div>
 
       <div>
@@ -34,7 +20,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenShortcuts }) => {
           rel="noopener noreferrer"
           className={styles.githubLink}
         >
-          {APP_CONFIG.name}
+          {APP_CONFIG.name} v{APP_CONFIG.version}
         </a>
       </div>
     </footer>

@@ -123,4 +123,49 @@ describe('useCalculator Hook Integration', () => {
     })
     expect(result.current.expression).toBe('')
   })
+
+  it('supports cursor navigation and middle insertion', () => {
+    const { result } = renderHook(() => useCalculator())
+
+    act(() => {
+      result.current.append('1')
+    })
+    act(() => {
+      result.current.append('3')
+    })
+    expect(result.current.expression).toBe('13')
+
+    // Move cursor to between 1 and 3
+    act(() => {
+      result.current.setCursorPos(1)
+    })
+    act(() => {
+      result.current.append('+')
+      result.current.append('2')
+    })
+
+    expect(result.current.expression).toBe('1+23')
+  })
+
+  it('formats calculation according to configured decimal places', () => {
+    const { result } = renderHook(() => useCalculator())
+
+    act(() => {
+      result.current.setDecimals(2)
+    })
+    act(() => {
+      result.current.append('1')
+    })
+    act(() => {
+      result.current.append('/')
+    })
+    act(() => {
+      result.current.append('3')
+    })
+    act(() => {
+      result.current.calculate()
+    })
+
+    expect(result.current.result).toBe('0.33')
+  })
 })

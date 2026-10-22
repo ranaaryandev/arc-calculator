@@ -1,35 +1,52 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Copy, Check, AlertCircle } from 'lucide-react'
 import type { AngleMode } from '../../calculator/types'
-import { formatExpressionForDisplay } from '../../calculator/formatter'
 import styles from './Display.module.css'
 
 interface DisplayProps {
   expression: string
+  cursorPos: number
+  onUpdateExpression: (expr: string, pos?: number) => void
+  onCalculate: () => void
   result: string | null
   preview: string | null
   error: string | null
   angleMode: AngleMode
-  hasMemory: boolean
+  memory: number | null
+  onMemoryRecall: () => void
+  onMemoryClear: () => void
+  decimals: number
+  onChangeDecimals: (d: number) => void
+  showUnrounded: boolean
+  onToggleUnrounded: () => void
 }
 
 export const Display: React.FC<DisplayProps> = ({
   expression,
+  cursorPos,
+  onUpdateExpression,
+  onCalculate,
   result,
   preview,
   error,
   angleMode,
-  hasMemory,
+  memory,
+  onMemoryRecall,
+  onMemoryClear,
+  decimals,
+  onChangeDecimals,
+  showUnrounded,
+  onToggleUnrounded,
 }) => {
   const [copied, setCopied] = useState(false)
-  const expressionRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  // Scroll expression to the right on update
+  // Keep cursor position synced on input when expression or cursorPos updates
   useEffect(() => {
-    if (expressionRef.current) {
-      expressionRef.current.scrollLeft = expressionRef.current.scrollWidth
+    if (inputRef.current && document.activeElement === inputRef.current) {
+      inputRef.current.setSelectionRange(cursorPos, cursorPos)
     }
-  }, [expression])
+  }, [cursorPos])
 
   const copyToClipboard = async () => {
     const textToCopy = error ? '' : result || preview || expression || '0'
@@ -55,53 +72,121 @@ export const Display: React.FC<DisplayProps> = ({
     }
   }
 
-  const formattedDisplayExpr = formatExpressionForDisplay(expression)
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nextVal = e.target.value
+    const nextPos = e.target.selectionStart || nextVal.length
+    onUpdateExpression(nextVal, nextPos)
+  }
+
+  const handleInputSelect = (e: React.SyntheticEvent<HTMLInputElement>) => {
+    const pos = (e.target as HTMLInputElement).selectionStart
+    if (pos !== null) {
+      onUpdateExpression(expression, pos)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      onCalculate()
+    }
+  }
 
   return (
     <section className={styles.displayContainer} aria-label="Calculator display">
-      {/* Top Status Bar */}
+      {/* Top Status & Controls Bar */}
       <div className={styles.statusBar}>
         <div className={styles.statusBadges}>
           <span className={styles.badge} title="Active angle mode">
             {angleMode}
           </span>
-          {hasMemory && (
-            <span className={`${styles.badge} ${styles.memoryBadge}`} title="Value stored in memory">
-              M
-            </span>
+
+          {memory !== null && (
+            <div className={styles.memoryPill} title={`Memory stored: ${memory}`}>
+              <span>M: {memory}</span>
+              <button
+                type="button"
+                className={styles.memoryActionBtn}
+                onClick={onMemoryRecall}
+                title="Recall memory value"
+              >
+                MR
+              </button>
+              <button
+                type="button"
+                className={styles.memoryActionBtn}
+                onClick={onMemoryClear}
+                title="Clear memory"
+              >
+                MC
+              </button>
+            </div>
           )}
         </div>
 
-        <button
-          type="button"
-          className={`${styles.copyBtn} ${copied ? styles.copySuccess : ''}`}
-          onClick={copyToClipboard}
-          disabled={!!error || (!result && !preview && !expression)}
-          aria-label={copied ? 'Copied value to clipboard' : 'Copy result to clipboard'}
-          title="Copy result"
-        >
-          {copied ? (
-            <>
-              <Check size={13} aria-hidden="true" />
-              <span>Copied</span>
-            </>
-          ) : (
-            <>
-              <Copy size={13} aria-hidden="true" />
-              <span>Copy</span>
-            </>
-          )}
-        </button>
+        <div className={styles.statusControls}>
+          {/* Decimal Precision Selector */}
+          <select
+            className={styles.precisionSelect}
+            value={showUnrounded ? 'raw' : decimals.toString()}
+            onChange={(e) => {
+              if (e.target.value === 'raw') {
+                if (!showUnrounded) onToggleUnrounded()
+              } else {
+                if (showUnrounded) onToggleUnrounded()
+                onChangeDecimals(parseInt(e.target.value, 10))
+              }
+            }}
+            title="Configure numerical precision and rounding"
+            aria-label="Decimal places"
+          >
+            <option value="-1">Auto (12 fig)</option>
+            <option value="2">2 decimals</option>
+            <option value="4">4 decimals</option>
+            <option value="6">6 decimals</option>
+            <option value="8">8 decimals</option>
+            <option value="raw">Raw Unrounded</option>
+          </select>
+
+          {/* Copy Result Button */}
+          <button
+            type="button"
+            className={`${styles.copyBtn} ${copied ? styles.copySuccess : ''}`}
+            onClick={copyToClipboard}
+            disabled={!!error || (!result && !preview && !expression)}
+            aria-label={copied ? 'Copied value to clipboard' : 'Copy result to clipboard'}
+            title="Copy result"
+          >
+            {copied ? (
+              <>
+                <Check size={13} aria-hidden="true" />
+                <span>Copied</span>
+              </>
+            ) : (
+              <>
+                <Copy size={13} aria-hidden="true" />
+                <span>Copy</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* Expression Row */}
-      <div
-        ref={expressionRef}
-        className={`${styles.expressionRow} tabular-numbers`}
-        title={expression || 'Empty expression'}
-        aria-label={`Expression: ${expression || '0'}`}
-      >
-        {formattedDisplayExpr || '0'}
+      {/* Interactive Expression Editor */}
+      <div className={styles.expressionWrapper}>
+        <input
+          ref={inputRef}
+          type="text"
+          className={styles.expressionInput}
+          value={expression}
+          onChange={handleInputChange}
+          onSelect={handleInputSelect}
+          onKeyDown={handleKeyDown}
+          placeholder="0"
+          aria-label="Expression editor"
+          spellCheck={false}
+          autoComplete="off"
+        />
       </div>
 
       {/* Result / Preview Row */}

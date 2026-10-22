@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  min-height: 98px;
+  min-height: 104px;
   position: relative;
   justify-content: space-between;
 }
@@ -16,7 +16,7 @@
   justify-content: space-between;
   font-size: 0.75rem;
   color: var(--text-muted);
-  min-height: 20px;
+  min-height: 22px;
 }
 
 .statusBadges {
@@ -26,7 +26,7 @@
 }
 
 .badge {
-  padding: 1px 6px;
+  padding: 1px 7px;
   border-radius: var(--radius-sm);
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
@@ -36,10 +36,57 @@
   color: var(--text-secondary);
 }
 
-.memoryBadge {
+.memoryPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
   background: var(--accent-subtle);
-  border-color: var(--accent-border);
+  border: 1px solid var(--accent-border);
+  font-weight: 600;
+  font-size: 0.72rem;
   color: var(--accent-primary);
+}
+
+.memoryActionBtn {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--bg-surface);
+  border: 1px solid var(--accent-border);
+  color: var(--accent-primary);
+  cursor: pointer;
+  margin-left: 2px;
+}
+
+.memoryActionBtn:hover {
+  background: var(--accent-primary);
+  color: var(--accent-primary-text);
+}
+
+.statusControls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.precisionSelect {
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  outline: none;
+  cursor: pointer;
+}
+
+.precisionSelect:hover {
+  color: var(--text-primary);
+  border-color: var(--border-default);
 }
 
 .copyBtn {
@@ -67,24 +114,28 @@
   border-color: var(--accent-border) !important;
 }
 
-/* Expression row */
-.expressionRow {
+/* Interactive Expression Editor Input */
+.expressionWrapper {
   width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-  text-align: right;
-  font-family: var(--font-mono);
-  font-size: 1.05rem;
-  color: var(--text-secondary);
-  line-height: 1.3;
-  padding: 1px 0;
-  scroll-behavior: smooth;
-  font-variant-numeric: tabular-nums;
+  position: relative;
 }
 
-.expressionRow:empty::before {
-  content: "0";
+.expressionInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 1.12rem;
+  color: var(--text-primary);
+  line-height: 1.3;
+  padding: 2px 0;
+  font-variant-numeric: tabular-nums;
+  cursor: text;
+}
+
+.expressionInput::placeholder {
   color: var(--text-muted);
   opacity: 0.4;
 }

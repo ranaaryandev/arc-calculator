@@ -62,7 +62,8 @@ export interface FunctionCallNode {
 
 export interface EvaluationOptions {
   angleMode?: AngleMode
-  precision?: number
+  decimals?: number // -1 for Auto, 0..12 for fixed decimals
+  showUnrounded?: boolean
 }
 
 export interface EvaluationResult {

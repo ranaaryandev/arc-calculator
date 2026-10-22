@@ -33,7 +33,10 @@ export function evaluateExpression(
     const value = evaluateAST(ast, options)
     return {
       value,
-      formatted: formatResult(value),
+      formatted: formatResult(value, {
+        decimals: options.decimals,
+        showUnrounded: options.showUnrounded,
+      }),
       error: null,
       isPartial: false,
     }
@@ -66,7 +69,13 @@ export function calculateLivePreview(
   try {
     const ast = parse(trimmed)
     const value = evaluateAST(ast, options)
-    return { preview: formatResult(value), error: null }
+    return {
+      preview: formatResult(value, {
+        decimals: options.decimals,
+        showUnrounded: options.showUnrounded,
+      }),
+      error: null,
+    }
   } catch {
     // If direct parse fails, check if it's just incomplete
   }
@@ -79,7 +88,13 @@ export function calculateLivePreview(
     try {
       const ast = parse(autoClosed)
       const value = evaluateAST(ast, options)
-      return { preview: formatResult(value), error: null }
+      return {
+        preview: formatResult(value, {
+          decimals: options.decimals,
+          showUnrounded: options.showUnrounded,
+        }),
+        error: null,
+      }
     } catch {
       // Still invalid
     }
@@ -91,7 +106,13 @@ export function calculateLivePreview(
     try {
       const ast = parse(stripped)
       const value = evaluateAST(ast, options)
-      return { preview: formatResult(value), error: null }
+      return {
+        preview: formatResult(value, {
+          decimals: options.decimals,
+          showUnrounded: options.showUnrounded,
+        }),
+        error: null,
+      }
     } catch {
       // Incomplete
     }

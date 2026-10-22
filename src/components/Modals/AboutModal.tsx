@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { X, Info, ShieldCheck, Cpu, HardDrive } from 'lucide-react'
+import { X, Info, ShieldCheck, HardDrive } from 'lucide-react'
 import { APP_CONFIG } from '../../config/appConfig'
 import styles from './Modals.module.css'
 
@@ -25,7 +25,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({
   if (!isOpen) return null
 
   const handleResetData = () => {
-    if (window.confirm('Are you sure you want to clear all locally saved history, memory, and settings?')) {
+    if (window.confirm('Clear all locally saved history, memory, and calculator settings?')) {
       onClearAllData()
       onClose()
     }
@@ -46,59 +46,48 @@ export const AboutModal: React.FC<AboutModalProps> = ({
 
         <div className={styles.modalBody}>
           <div>
-            <p style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
+            <p style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
               {APP_CONFIG.name} — Version {APP_CONFIG.version}
             </p>
-            <p>{APP_CONFIG.description}</p>
+            <p style={{ fontSize: '0.88rem', lineHeight: 1.5 }}>
+              A clean, mathematically reliable scientific and standard calculator designed with desktop utility restraint, full keyboard navigation, and zero analytics or trackers.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, background: 'var(--bg-surface-elevated)', padding: 12, borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem' }}>
+              <ShieldCheck size={16} style={{ color: 'var(--accent-primary)', flexShrink: 0 }} />
+              <span><strong>100% Local-First:</strong> Calculations and history stay in your browser.</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem' }}>
+              <HardDrive size={16} style={{ color: 'var(--accent-primary)', flexShrink: 0 }} />
+              <span><strong>No Accounts:</strong> No signups, no tracking cookies, no server telemetry.</span>
+            </div>
           </div>
 
           <div>
-            <div className={styles.sectionTitle}>Engine & Safety Architecture</div>
-            <ul className={styles.featureList}>
-              <li className={styles.featureItem}>
-                <Cpu size={16} className={styles.featureIcon} aria-hidden="true" />
-                <div>
-                  <strong style={{ color: 'var(--text-primary)' }}>AST Parser:</strong> Expressions are tokenized and parsed into a syntax tree with zero reliance on JavaScript <code>eval()</code> or dynamic code execution.
-                </div>
-              </li>
-              <li className={styles.featureItem}>
-                <ShieldCheck size={16} className={styles.featureIcon} aria-hidden="true" />
-                <div>
-                  <strong style={{ color: 'var(--text-primary)' }}>Precision Policy:</strong> Employs significant-figure normalization to eliminate IEEE-754 binary floating-point artifacts (such as 0.1 + 0.2) and guards against singularities like tan(90°).
-                </div>
-              </li>
-              <li className={styles.featureItem}>
-                <HardDrive size={16} className={styles.featureIcon} aria-hidden="true" />
-                <div>
-                  <strong style={{ color: 'var(--text-primary)' }}>100% Local-First:</strong> Calculations, history, and preferences remain strictly within your browser's local storage. No analytics, tracking, or network requests are ever dispatched.
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <div className={styles.sectionTitle}>Application Data Management</div>
-            <p style={{ fontSize: '0.82rem', marginBottom: 12 }}>
-              Your calculation history and memory are stored in your browser's <code>localStorage</code>.
+            <div className={styles.sectionTitle}>Application Storage</div>
+            <p style={{ fontSize: '0.82rem', marginBottom: 10 }}>
+              Your calculation history, memory, and theme preferences are saved locally on your device.
             </p>
             <button
               type="button"
               className={styles.dangerBtn}
               onClick={handleResetData}
             >
-              Clear All Local Storage Data
+              Clear Local Storage Data
             </button>
           </div>
 
-          <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 12, fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between' }}>
-            <span>Open Source under MIT License</span>
+          <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 12, fontSize: '0.82rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>MIT License</span>
             <a
               href={APP_CONFIG.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: 'var(--accent-primary)', textDecoration: 'none' }}
+              style={{ color: 'var(--accent-primary)', textDecoration: 'none', fontWeight: 500 }}
             >
-              GitHub Repository
+              View on GitHub →
             </a>
           </div>
         </div>

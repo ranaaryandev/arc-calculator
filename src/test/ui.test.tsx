@@ -63,4 +63,22 @@ describe('Arc Calculator UI & Accessibility', () => {
     expect(screen.getByRole('dialog', { name: 'Calculation History' })).toBeInTheDocument()
     expect(screen.getByText('No calculations yet')).toBeInTheDocument()
   })
+
+  it('opens scientific constants modal and displays categories', () => {
+    render(<App />)
+    const constBtn = screen.getByLabelText('Scientific constants catalog')
+    fireEvent.click(constBtn)
+
+    expect(screen.getByRole('dialog', { name: 'Scientific Constants' })).toBeInTheDocument()
+    expect(screen.getByText('Speed of Light in Vacuum')).toBeInTheDocument()
+  })
+
+  it('opens unit converter catalog modal', () => {
+    render(<App />)
+    const convBtn = screen.getByLabelText('Unit converter')
+    fireEvent.click(convBtn)
+
+    expect(screen.getByRole('dialog', { name: 'Unit Converter' })).toBeInTheDocument()
+    expect(screen.getByText('Unit Converter Catalog')).toBeInTheDocument()
+  })
 })

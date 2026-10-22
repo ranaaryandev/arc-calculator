@@ -1,5 +1,5 @@
 import React from 'react'
-import { Sun, Moon, History, Keyboard, Info, Calculator, ArrowRightLeft } from 'lucide-react'
+import { Sun, Moon, History, Keyboard, Info, Calculator, ArrowRightLeft, Atom } from 'lucide-react'
 import type { AngleMode } from '../../calculator/types'
 import type { Theme } from '../../hooks/useTheme'
 import { APP_CONFIG } from '../../config/appConfig'
@@ -16,6 +16,7 @@ interface HeaderProps {
   onOpenShortcuts: () => void
   onOpenAbout: () => void
   onOpenUnitConverter: () => void
+  onOpenConstants: () => void
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -29,6 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenShortcuts,
   onOpenAbout,
   onOpenUnitConverter,
+  onOpenConstants,
 }) => {
   return (
     <header className={styles.header}>
@@ -67,10 +69,22 @@ export const Header: React.FC<HeaderProps> = ({
           className={styles.navBtn}
           onClick={onOpenUnitConverter}
           aria-label="Unit converter"
-          title="Open unit converter"
+          title="Open unit converter catalog"
         >
           <ArrowRightLeft size={15} aria-hidden="true" />
           <span className={styles.btnLabel}>Converter</span>
+        </button>
+
+        {/* Scientific Constants Trigger */}
+        <button
+          type="button"
+          className={styles.navBtn}
+          onClick={onOpenConstants}
+          aria-label="Scientific constants catalog"
+          title="Open math, physics, & chemistry constants"
+        >
+          <Atom size={15} aria-hidden="true" />
+          <span className={styles.btnLabel}>Constants</span>
         </button>
 
         {/* History Toggle */}
@@ -101,23 +115,25 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Theme Toggle */}
         <button
           type="button"
-          className={styles.iconOnlyBtn}
+          className={styles.navBtn}
           onClick={onToggleTheme}
           aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
         >
-          {theme === 'dark' ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" />}
+          {theme === 'dark' ? <Sun size={15} aria-hidden="true" /> : <Moon size={15} aria-hidden="true" />}
+          <span className={styles.btnLabel}>{theme === 'dark' ? 'Light' : 'Dark'}</span>
         </button>
 
         {/* About / Info Trigger */}
         <button
           type="button"
-          className={styles.iconOnlyBtn}
+          className={styles.navBtn}
           onClick={onOpenAbout}
           aria-label="About Arc Calculator"
           title="About Arc Calculator"
         >
-          <Info size={16} aria-hidden="true" />
+          <Info size={15} aria-hidden="true" />
+          <span className={styles.btnLabel}>About</span>
         </button>
       </div>
     </header>

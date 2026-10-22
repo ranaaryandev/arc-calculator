@@ -1,12 +1,19 @@
 /**
  * Numerical formatting policy for Arc Calculator
- * - Prevents standard IEEE-754 precision artifacts (e.g. 0.1 + 0.2 => 0.30000000000000004 formatted cleanly as 0.3)
+ * - Supports Auto mode (up to 12 significant digits with floating-point cleanup)
+ * - Supports fixed decimal places (0 to 12 decimals)
  * - Normalizes negative zero (-0) to 0
- * - Automatically selects scientific notation for numbers with absolute value >= 1e15 or (0 < abs < 1e-9)
- * - Retains maximum relevant precision (up to 12 significant digits) without trailing zeros
+ * - Automatically selects scientific notation for numbers with absolute value >= 1e14 or (0 < abs < 1e-7)
  */
 
-export function formatResult(value: number, maxSignificantDigits = 12): string {
+export interface FormatterOptions {
+  decimals?: number // -1 for Auto, 0..12 for fixed decimal places
+  showUnrounded?: boolean
+}
+
+export function formatResult(value: number, options: FormatterOptions = {}): string {
+  const { decimals = -1, showUnrounded = false } = options
+
   if (!Number.isFinite(value)) {
     if (Number.isNaN(value)) return 'Error: Not a number'
     return value > 0 ? 'Infinity' : '-Infinity'
@@ -17,27 +24,32 @@ export function formatResult(value: number, maxSignificantDigits = 12): string {
     return '0'
   }
 
+  // If unrounded requested, return full precision string
+  if (showUnrounded) {
+    return value.toString()
+  }
+
   const abs = Math.abs(value)
 
   // Use scientific notation for very large or very small values
   if (abs >= 1e14 || (abs > 0 && abs < 1e-7)) {
     const expStr = value.toExponential(8)
-    // Clean up trailing zeros in scientific notation e.g. 1.50000000e+20 -> 1.5e+20
     return expStr.replace(/(\.[0-9]*[1-9])0+e/, '$1e').replace(/\.0+e/, 'e')
   }
 
-  // Round to significant digits to clean up floating point inaccuracies (e.g., 0.1 + 0.2)
-  const precisionCleaned = parseFloat(value.toPrecision(maxSignificantDigits))
+  // If specific decimal places requested (0..12)
+  if (decimals >= 0 && decimals <= 12) {
+    return value.toFixed(decimals)
+  }
 
-  // If integer
+  // Default: Auto rounding (cleans 0.1 + 0.2 => 0.3 without trailing artifacts)
+  const precisionCleaned = parseFloat(value.toPrecision(12))
+
   if (Number.isInteger(precisionCleaned)) {
     return precisionCleaned.toString()
   }
 
-  // Format decimal representation
-  // Avoid scientific notation for standard numbers
-  const str = precisionCleaned.toString()
-  return str
+  return precisionCleaned.toString()
 }
 
 /**
