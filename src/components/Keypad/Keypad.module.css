@@ -1,0 +1,199 @@
+.keypadContainer {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--bg-surface);
+  flex: 1;
+}
+
+/* Memory Bar */
+.memoryBar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-2);
+}
+
+.memoryBtn {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 6px 0;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.memoryBtn:hover:not(:disabled) {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+.memoryBtnActive {
+  color: var(--accent-primary);
+}
+
+/* Mobile mode selector (tabs for mobile view) */
+.mobileTabs {
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 2px;
+}
+
+.mobileTab {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.mobileTabActive {
+  background: var(--bg-surface);
+  color: var(--accent-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Responsive Grid Layout */
+.mainGrid {
+  display: grid;
+  gap: var(--space-2);
+  /* Desktop default: 9 columns (4 scientific columns + 5 standard columns) */
+  grid-template-columns: repeat(9, 1fr);
+  width: 100%;
+}
+
+/* Key button styling */
+.keyBtn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  font-size: 1.05rem;
+  border: 1px solid var(--border-subtle);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.keyBtn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Variants */
+.variantNumber {
+  background: var(--bg-key-num);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.variantNumber:hover:not(:disabled) {
+  background: var(--bg-key-num-hover);
+  border-color: var(--border-default);
+}
+
+.variantOperator {
+  background: var(--bg-key-op);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.variantOperator:hover:not(:disabled) {
+  background: var(--bg-key-op-hover);
+  border-color: var(--border-default);
+}
+
+.variantScientific {
+  background: var(--bg-key-sci);
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.variantScientific:hover:not(:disabled) {
+  background: var(--bg-key-sci-hover);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+.variantAction {
+  background: var(--bg-surface-elevated);
+  color: var(--text-secondary);
+}
+
+.variantAction:hover:not(:disabled) {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+.variantDestructive {
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--text-error);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.variantDestructive:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.16);
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.variantPrimary {
+  background: var(--accent-primary);
+  color: var(--accent-primary-text);
+  font-weight: 700;
+  font-size: 1.3rem;
+  border-color: var(--accent-primary-hover);
+}
+
+.variantPrimary:hover:not(:disabled) {
+  background: var(--accent-primary-hover);
+}
+
+.spanTwoCols {
+  grid-column: span 2;
+}
+
+/* Secondary toggle row (2nd functions like inv trig) */
+.sciActive {
+  background: var(--accent-subtle) !important;
+  color: var(--accent-primary) !important;
+  border-color: var(--accent-border) !important;
+}
+
+/* Responsive media queries */
+@media (max-width: 768px) {
+  .mobileTabs {
+    display: grid;
+  }
+
+  /* In mobile view, show 4 or 5 columns depending on active tab */
+  .mainGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .mainGrid.standardOnly {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .mainGrid.scientificOnly {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .keyBtn {
+    min-height: 52px;
+    font-size: 1.15rem;
+  }
+}

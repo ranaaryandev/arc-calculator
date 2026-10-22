@@ -1,0 +1,97 @@
+:root {
+  /* Common typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Border Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  /* Transitions */
+  --transition-fast: 140ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Dark Theme (Default) */
+:root,
+[data-theme="dark"] {
+  --bg-app: #101114;
+  --bg-surface: #17181e;
+  --bg-surface-elevated: #1f2028;
+  --bg-surface-hover: #262832;
+  --bg-key-num: #1b1c23;
+  --bg-key-num-hover: #23252f;
+  --bg-key-sci: #15161c;
+  --bg-key-sci-hover: #1e2029;
+  --bg-key-op: #242630;
+  --bg-key-op-hover: #2e303d;
+  --bg-key-action: #14302c;
+  --bg-key-action-hover: #193e39;
+
+  --accent-primary: #2dd4bf;
+  --accent-primary-hover: #14b8a6;
+  --accent-primary-text: #042f2e;
+  --accent-subtle: rgba(45, 212, 191, 0.12);
+  --accent-border: rgba(45, 212, 191, 0.28);
+
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-error: #f87171;
+  --bg-error-subtle: rgba(248, 113, 113, 0.12);
+
+  --border-subtle: #242630;
+  --border-default: #2d303d;
+  --border-focus: #2dd4bf;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  --bg-app: #f4f5f7;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f9fafb;
+  --bg-surface-hover: #f3f4f6;
+  --bg-key-num: #ffffff;
+  --bg-key-num-hover: #f3f4f6;
+  --bg-key-sci: #f8f9fa;
+  --bg-key-sci-hover: #edf0f2;
+  --bg-key-op: #eef1f4;
+  --bg-key-op-hover: #e2e6eb;
+  --bg-key-action: #e6f7f5;
+  --bg-key-action-hover: #d2f1ed;
+
+  --accent-primary: #0d9488;
+  --accent-primary-hover: #0f766e;
+  --accent-primary-text: #ffffff;
+  --accent-subtle: rgba(13, 148, 136, 0.1);
+  --accent-border: rgba(13, 148, 136, 0.24);
+
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --text-error: #dc2626;
+  --bg-error-subtle: rgba(220, 38, 38, 0.08);
+
+  --border-subtle: #e5e7eb;
+  --border-default: #d1d5db;
+  --border-focus: #0d9488;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
