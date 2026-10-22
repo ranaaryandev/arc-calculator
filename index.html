@@ -31,9 +31,16 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Arc Calculator — Precision Scientific &amp; Standard Calculator" />
     <meta name="twitter:description" content="A refined, mathematically rigorous scientific calculator web application with AST-based parsing and full keyboard control." />
+    <link rel="stylesheet" crossorigin href="./assets/index-DFkZo9by.css">
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="./src/main.tsx"></script>
+    <script type="module">
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        import('/src/main.tsx');
+      } else {
+        import('./assets/index-CaUqzb1m.js');
+      }
+    </script>
   </body>
 </html>
