@@ -122,4 +122,35 @@ describe('Arc Calculator UI & Accessibility', () => {
 
     expect(screen.queryByRole('dialog', { name: '2D Function Grapher' })).not.toBeInTheDocument()
   })
+it('supports multi-function plotting in 2D grapher modal', () => {
+    render(<App />)
+    const graphBtn = screen.getByLabelText('2D Function Grapher')
+    fireEvent.click(graphBtn)
+
+    // Initially single function f(x)
+    expect(screen.getByText('f(x) =')).toBeInTheDocument()
+    expect(screen.queryByText('f₂(x) =')).not.toBeInTheDocument()
+
+    // Click to add secondary function f2(x)
+    const addFnBtn = screen.getByLabelText('Add f2(x)')
+    fireEvent.click(addFnBtn)
+
+    // Now both f1(x) and f2(x) are visible
+    expect(screen.getByText('f₁(x) =')).toBeInTheDocument()
+    expect(screen.getByText('f₂(x) =')).toBeInTheDocument()
+
+    // Test preset 'sin & cos'
+    const sinCosPreset = screen.getByRole('button', { name: 'sin & cos' })
+    fireEvent.click(sinCosPreset)
+
+    const f1Input = screen.getByLabelText('Formula for f1(x)') as HTMLInputElement
+    const f2Input = screen.getByLabelText('Formula for f2(x)') as HTMLInputElement
+    expect(f1Input.value).toBe('sin(x)')
+    expect(f2Input.value).toBe('cos(x)')
+
+    // Click to remove secondary function
+    const removeFnBtn = screen.getByLabelText('Remove f2(x)')
+    fireEvent.click(removeFnBtn)
+    expect(screen.queryByText('f₂(x) =')).not.toBeInTheDocument()
+  })
 })

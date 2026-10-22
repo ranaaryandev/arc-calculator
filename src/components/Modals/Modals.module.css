@@ -295,3 +295,51 @@
   border: 1px solid var(--border-subtle);
   color: var(--accent-primary);
 }
+
+.graphFnLabel2 {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: #f59e0b;
+  font-size: 0.95rem;
+}
+
+.addFnBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.addFnBtn:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.legendBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}

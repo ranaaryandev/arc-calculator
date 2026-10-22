@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
-import { X, TrendingUp, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react'
+import { X, TrendingUp, ZoomIn, ZoomOut, RotateCcw, Plus, Minus } from 'lucide-react'
 import { parse, evaluateAST } from '../../calculator'
 import styles from './Modals.module.css'
 
@@ -8,20 +8,30 @@ interface GraphModalProps {
   onClose: () => void
 }
 
-const PRESETS = [
-  { label: 'sin(x)', expr: 'sin(x)' },
-  { label: 'cos(x)', expr: 'cos(x)' },
-  { label: 'x² − 4', expr: 'x^2 - 4' },
-  { label: '1/x', expr: '1/x' },
-  { label: '√x', expr: 'sqrt(x)' },
-  { label: 'x³ − 3x', expr: 'x^3 - 3*x' },
+interface PresetItem {
+  label: string
+  f1: string
+  f2?: string
+}
+
+const PRESETS: PresetItem[] = [
+  { label: 'sin(x)', f1: 'sin(x)' },
+  { label: 'cos(x)', f1: 'cos(x)' },
+  { label: 'sin & cos', f1: 'sin(x)', f2: 'cos(x)' },
+  { label: 'x² − 4', f1: 'x^2 - 4' },
+  { label: '1/x', f1: '1/x' },
+  { label: '√x', f1: 'sqrt(x)' },
+  { label: 'x³ − 3x', f1: 'x^3 - 3*x' },
 ]
 
 export const GraphModal: React.FC<GraphModalProps> = ({ isOpen, onClose }) => {
-  const [expression, setExpression] = useState('sin(x)')
+  const [expr1, setExpr1] = useState('sin(x)')
+  const [showSecondFn, setShowSecondFn] = useState(false)
+  const [expr2, setExpr2] = useState('cos(x)')
+
   const [xRange, setXRange] = useState<[number, number]>([-10, 10])
   const [yRange, setYRange] = useState<[number, number]>([-5, 5])
-  const [traceCoord, setTraceCoord] = useState<{ x: number; y: number } | null>(null)
+  const [traceCoord, setTraceCoord] = useState<{ x: number; y1: number | null; y2: number | null } | null>(null)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const isDraggingRef = useRef(false)
@@ -43,15 +53,25 @@ export const GraphModal: React.FC<GraphModalProps> = ({ isOpen, onClose }) => {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isOpen, onClose])
 
-  // Parse AST once per expression change
-  const { ast, parseError } = useMemo(() => {
-    if (!expression.trim()) return { ast: null, parseError: null }
+  // Parse AST for expr1
+  const { ast1, parseError1 } = useMemo(() => {
+    if (!expr1.trim()) return { ast1: null, parseError1: null }
     try {
-      return { ast: parse(expression.trim()), parseError: null }
+      return { ast1: parse(expr1.trim()), parseError1: null }
     } catch (err: unknown) {
-      return { ast: null, parseError: err instanceof Error ? err.message : 'Invalid formula' }
+      return { ast1: null, parseError1: err instanceof Error ? err.message : 'Invalid formula' }
     }
-  }, [expression])
+  }, [expr1])
+
+  // Parse AST for expr2
+  const { ast2, parseError2 } = useMemo(() => {
+    if (!showSecondFn || !expr2.trim()) return { ast2: null, parseError2: null }
+    try {
+      return { ast2: parse(expr2.trim()), parseError2: null }
+    } catch (err: unknown) {
+      return { ast2: null, parseError2: err instanceof Error ? err.message : 'Invalid formula' }
+    }
+  }, [showSecondFn, expr2])
 
   // Draw plot on canvas
   const drawPlot = useCallback(() => {
@@ -87,7 +107,6 @@ export const GraphModal: React.FC<GraphModalProps> = ({ isOpen, onClose }) => {
     ctx.fillStyle = '#6b7280'
     ctx.font = '10px ui-monospace, monospace'
 
-    // Grid step calculation
     const roughGridSteps = 8
     const rawStepX = xSpan / roughGridSteps
     const stepPowX = Math.pow(10, Math.floor(Math.log10(rawStepX)))
@@ -146,13 +165,15 @@ export const GraphModal: React.FC<GraphModalProps> = ({ isOpen, onClose }) => {
       ctx.stroke()
     }
 
-    // Plot Function Curve
-    if (ast) {
-      ctx.strokeStyle = '#2dd4bf' // Teal primary accent
+    const numSamples = Math.min(width * 2, 400)
+
+    // Helper to render a curve
+    const plotCurve = (ast: ReturnType<typeof parse> | null, strokeColor: string) => {
+      if (!ast) return
+      ctx.strokeStyle = strokeColor
       ctx.lineWidth = 2.5
       ctx.beginPath()
 
-      const numSamples = Math.min(width * 2, 400)
       let prevValid = false
       let prevScreenY = 0
 
@@ -173,7 +194,6 @@ export const GraphModal: React.FC<GraphModalProps> = ({ isOpen, onClose }) => {
           const sx = toScreenX(x)
           const sy = toScreenY(y)
 
-          // Discontinuity detection: asymptotic jumps (e.g. 1/x or tan(x))
           const isDiscontinuous = prevValid && Math.abs(sy - prevScreenY) > height * 0.75
 
           if (!prevValid || isDiscontinuous) {
@@ -191,13 +211,20 @@ export const GraphModal: React.FC<GraphModalProps> = ({ isOpen, onClose }) => {
       ctx.stroke()
     }
 
+    // Plot Function 1 (Teal)
+    plotCurve(ast1, '#2dd4bf')
+
+    // Plot Function 2 (Amber)
+    if (showSecondFn) {
+      plotCurve(ast2, '#f59e0b')
+    }
+
     // Trace marker if active
     if (traceCoord) {
       const sx = toScreenX(traceCoord.x)
-      const sy = toScreenY(traceCoord.y)
 
-      if (sx >= 0 && sx <= width && sy >= 0 && sy <= height) {
-        ctx.strokeStyle = 'rgba(45, 212, 191, 0.4)'
+      if (sx >= 0 && sx <= width) {
+        ctx.strokeStyle = 'rgba(156, 163, 175, 0.4)'
         ctx.lineWidth = 1
         ctx.setLineDash([3, 3])
 
@@ -206,24 +233,34 @@ export const GraphModal: React.FC<GraphModalProps> = ({ isOpen, onClose }) => {
         ctx.moveTo(sx, 0)
         ctx.lineTo(sx, height)
         ctx.stroke()
-
-        // Horizontal guide
-        ctx.beginPath()
-        ctx.moveTo(0, sy)
-        ctx.lineTo(width, sy)
-        ctx.stroke()
         ctx.setLineDash([])
 
-        // Point dot
-        ctx.fillStyle = '#2dd4bf'
-        ctx.beginPath()
-        ctx.arc(sx, sy, 4.5, 0, Math.PI * 2)
-        ctx.fill()
+        // f1 marker
+        if (traceCoord.y1 !== null) {
+          const sy1 = toScreenY(traceCoord.y1)
+          if (sy1 >= 0 && sy1 <= height) {
+            ctx.fillStyle = '#2dd4bf'
+            ctx.beginPath()
+            ctx.arc(sx, sy1, 4.5, 0, Math.PI * 2)
+            ctx.fill()
+          }
+        }
+
+        // f2 marker
+        if (showSecondFn && traceCoord.y2 !== null) {
+          const sy2 = toScreenY(traceCoord.y2)
+          if (sy2 >= 0 && sy2 <= height) {
+            ctx.fillStyle = '#f59e0b'
+            ctx.beginPath()
+            ctx.arc(sx, sy2, 4.5, 0, Math.PI * 2)
+            ctx.fill()
+          }
+        }
       }
     }
 
     ctx.restore()
-  }, [xRange, yRange, ast, traceCoord])
+  }, [xRange, yRange, ast1, ast2, showSecondFn, traceCoord])
 
   useEffect(() => {
     if (isOpen) {
@@ -251,17 +288,31 @@ export const GraphModal: React.FC<GraphModalProps> = ({ isOpen, onClose }) => {
     const [xMin, xMax] = xRange
     const currentX = xMin + screenRatioX * (xMax - xMin)
 
-    if (ast) {
+    let y1Val: number | null = null
+    let y2Val: number | null = null
+
+    if (ast1) {
       try {
-        const val = evaluateAST(ast, { variables: { x: currentX }, angleMode: 'RAD' })
-        if (Number.isFinite(val)) {
-          setTraceCoord({ x: currentX, y: val })
-        } else {
-          setTraceCoord(null)
-        }
+        const val = evaluateAST(ast1, { variables: { x: currentX }, angleMode: 'RAD' })
+        if (Number.isFinite(val)) y1Val = val
       } catch {
-        setTraceCoord(null)
+        y1Val = null
       }
+    }
+
+    if (showSecondFn && ast2) {
+      try {
+        const val = evaluateAST(ast2, { variables: { x: currentX }, angleMode: 'RAD' })
+        if (Number.isFinite(val)) y2Val = val
+      } catch {
+        y2Val = null
+      }
+    }
+
+    if (y1Val !== null || y2Val !== null) {
+      setTraceCoord({ x: currentX, y1: y1Val, y2: y2Val })
+    } else {
+      setTraceCoord(null)
     }
 
     if (isDraggingRef.current) {
@@ -304,6 +355,14 @@ export const GraphModal: React.FC<GraphModalProps> = ({ isOpen, onClose }) => {
     setTraceCoord(null)
   }
 
+  const applyPreset = (p: PresetItem) => {
+    setExpr1(p.f1)
+    if (p.f2) {
+      setExpr2(p.f2)
+      setShowSecondFn(true)
+    }
+  }
+
   if (!isOpen) return null
 
   return (
@@ -321,38 +380,70 @@ export const GraphModal: React.FC<GraphModalProps> = ({ isOpen, onClose }) => {
 
         <div className={styles.modalBody}>
           <div className={styles.graphContainer}>
-            {/* Function input */}
+            {/* Function 1 input */}
             <div className={styles.graphInputRow}>
-              <span className={styles.graphFnLabel}>f(x) =</span>
+              <span className={styles.graphFnLabel}>{showSecondFn ? 'f₁(x) =' : 'f(x) ='}</span>
               <input
                 type="text"
                 className={styles.graphInput}
-                value={expression}
-                onChange={(e) => setExpression(e.target.value)}
+                value={expr1}
+                onChange={(e) => setExpr1(e.target.value)}
                 placeholder="e.g. sin(x), x^2 - 4"
-                aria-label="Formula for f(x)"
+                aria-label="Formula for f1(x)"
                 spellCheck={false}
               />
+              <button
+                type="button"
+                className={styles.addFnBtn}
+                onClick={() => setShowSecondFn(!showSecondFn)}
+                title={showSecondFn ? 'Hide f2(x)' : 'Add secondary function f2(x)'}
+                aria-label={showSecondFn ? 'Remove f2(x)' : 'Add f2(x)'}
+              >
+                {showSecondFn ? <Minus size={13} aria-hidden="true" /> : <Plus size={13} aria-hidden="true" />}
+                <span>f₂(x)</span>
+              </button>
             </div>
+
+            {/* Function 2 input (if active) */}
+            {showSecondFn && (
+              <div className={styles.graphInputRow}>
+                <span className={styles.graphFnLabel2}>f₂(x) =</span>
+                <input
+                  type="text"
+                  className={styles.graphInput}
+                  value={expr2}
+                  onChange={(e) => setExpr2(e.target.value)}
+                  placeholder="e.g. cos(x), 2*x + 1"
+                  aria-label="Formula for f2(x)"
+                  spellCheck={false}
+                />
+              </div>
+            )}
 
             {/* Formula presets */}
             <div className={styles.graphPresets} role="group" aria-label="Preset functions">
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Presets:</span>
               {PRESETS.map((p) => (
                 <button
-                  key={p.expr}
+                  key={p.label}
                   type="button"
-                  className={`${styles.presetBtn} ${expression === p.expr ? styles.presetBtnActive : ''}`}
-                  onClick={() => setExpression(p.expr)}
+                  className={`${styles.presetBtn} ${expr1 === p.f1 && (!p.f2 || (showSecondFn && expr2 === p.f2)) ? styles.presetBtnActive : ''}`}
+                  onClick={() => applyPreset(p)}
                 >
                   {p.label}
                 </button>
               ))}
             </div>
 
-            {parseError && (
+            {/* Syntax errors */}
+            {parseError1 && (
               <div style={{ color: 'var(--text-error)', fontSize: '0.8rem' }} role="alert">
-                Syntax: {parseError}
+                f₁(x) Syntax: {parseError1}
+              </div>
+            )}
+            {showSecondFn && parseError2 && (
+              <div style={{ color: 'var(--text-error)', fontSize: '0.8rem' }} role="alert">
+                f₂(x) Syntax: {parseError2}
               </div>
             )}
 
@@ -369,7 +460,7 @@ export const GraphModal: React.FC<GraphModalProps> = ({ isOpen, onClose }) => {
                   setTraceCoord(null)
                 }}
                 onWheel={handleWheel}
-                aria-label={`Graph of f(x) = ${expression}`}
+                aria-label={`Graph of f1(x) = ${expr1}${showSecondFn ? `, f2(x) = ${expr2}` : ''}`}
               />
             </div>
 
@@ -392,7 +483,9 @@ export const GraphModal: React.FC<GraphModalProps> = ({ isOpen, onClose }) => {
 
               {traceCoord ? (
                 <div className={styles.traceBadge} aria-live="polite">
-                  x: {traceCoord.x.toFixed(3)}, y: {traceCoord.y.toFixed(3)}
+                  x: {traceCoord.x.toFixed(3)}
+                  {traceCoord.y1 !== null && ` | f₁: ${traceCoord.y1.toFixed(3)}`}
+                  {showSecondFn && traceCoord.y2 !== null && ` | f₂: ${traceCoord.y2.toFixed(3)}`}
                 </div>
               ) : (
                 <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>

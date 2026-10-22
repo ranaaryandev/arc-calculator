@@ -28,7 +28,7 @@
 ## Key Features
 
 - **Mathematically Sound & Safe AST Engine**: Expressions are tokenized and parsed into an Abstract Syntax Tree (AST) using a custom recursive descent parser with precedence climbing. User inputs are never passed to `eval()` or `new Function()`.
-- **Interactive Expression Editor**: Click anywhere in the expression, select text, or use arrow keys to navigate the cursor and modify formulas directly.
+- **Interactive 2D Function Grapher**: Plot single or multiple simultaneous mathematical curves ((x)$ and (x)$) with zoom, pan, origin reset, asymptotic discontinuity detection, and real-time hover coordinate tracing. Evaluated entirely via safe AST evaluation (zero eval()).\n- **Undo / Redo Expression Stack**: Full undo/redo history for formula editing via Ctrl+Z / Ctrl+Y and dedicated status bar action buttons.\n- **Interactive Expression Editor**: Click anywhere in the expression, select text, or use arrow keys to navigate the cursor and modify formulas directly.
 - **Unmistakable 4-Column Keypad**: The primary keypad is laid out in a clean 4-column grid (`7 8 9 ÷`, `4 5 6 ×`, `1 2 3 −`, `± 0 . +`, with `=` prominent), with `AC`, `C`, and `Backspace` grouped above.
 - **Collapsible Scientific Suite**: Toggle between a pure standard calculator and an expanded scientific panel on demand (automatically collapsed on narrow screens for single-handed mobile use).
   - Powers ($x^y, x^2, x^3$), square roots ($\sqrt{x}$), cube roots ($\sqrt[3]{x}$), and arbitrary roots ($\sqrt[y]{x}$).
@@ -89,7 +89,7 @@
 - **Build Tool**: [Vite 8](https://vitejs.dev/)
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **Styling**: Vanilla CSS Modules with strict CSS Design Tokens (`tokens.css`)
-- **Testing**: [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) (100 tests across 6 test suites)
+- **Testing**: [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) (103 tests across 6 test suites + 7 Playwright E2E tests)
 - **Linter**: [Oxlint](https://oxc.rs/)
 - **Deployment**: GitHub Pages via GitHub Actions
 
@@ -126,7 +126,7 @@ Open `http://localhost:5173` (or the port output in your terminal) in your brows
 
 ## Testing & Quality Assurance
 
-Arc Calculator includes a comprehensive 100-test suite across 6 test suites covering arithmetic precedence, associativity, trigonometry, logarithms, domain errors, fuzzing/adversarial expressions, React hooks, storage failure resilience, and accessibility.
+Arc Calculator includes a comprehensive 103-test suite across 6 test suites plus 7 Playwright E2E tests covering arithmetic precedence, associativity, trigonometry, logarithms, domain errors, fuzzing/adversarial expressions, React hooks, storage failure resilience, and accessibility.
 
 ```bash
 # Run all unit and integration tests

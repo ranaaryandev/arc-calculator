@@ -10,7 +10,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "node scripts/e2e-browser-test.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.61.0",
