@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Header } from './components/Header/Header'
 import { Display } from './components/Display/Display'
 import { Keypad } from './components/Keypad/Keypad'
@@ -10,6 +10,7 @@ import { Footer } from './components/Footer/Footer'
 import { useCalculator } from './hooks/useCalculator'
 import { useTheme } from './hooks/useTheme'
 import { useKeyboard } from './hooks/useKeyboard'
+import { APP_CONFIG } from './config/appConfig'
 import styles from './App.module.css'
 
 export const App: React.FC = () => {
@@ -20,6 +21,10 @@ export const App: React.FC = () => {
   const [isConverterOpen, setIsConverterOpen] = useState(false)
 
   const calc = useCalculator()
+
+  useEffect(() => {
+    document.title = `${APP_CONFIG.name} — Precision Scientific & Standard Calculator`
+  }, [])
 
   // Connect physical keyboard
   useKeyboard(
@@ -76,7 +81,6 @@ export const App: React.FC = () => {
           onAppend={calc.append}
           onInsertFunction={calc.insertFunction}
           onInsertConstant={calc.insertConstant}
-          onInsertParenthesis={calc.insertParenthesis}
           onBackspace={calc.backspace}
           onClearEntry={calc.clearEntry}
           onClearAll={calc.clearAll}

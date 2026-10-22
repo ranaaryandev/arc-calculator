@@ -64,41 +64,44 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Unit Converter Trigger */}
         <button
           type="button"
-          className={styles.iconBtn}
+          className={styles.navBtn}
           onClick={onOpenUnitConverter}
           aria-label="Unit converter"
-          title="Unit converter"
+          title="Open unit converter"
         >
-          <ArrowRightLeft size={16} aria-hidden="true" />
+          <ArrowRightLeft size={15} aria-hidden="true" />
+          <span className={styles.btnLabel}>Converter</span>
         </button>
 
         {/* History Toggle */}
         <button
           type="button"
-          className={`${styles.iconBtn} ${isHistoryOpen ? styles.activeIconBtn : ''}`}
+          className={`${styles.navBtn} ${isHistoryOpen ? styles.navBtnActive : ''}`}
           onClick={onToggleHistory}
           aria-label={`Calculation history, ${historyCount} items`}
-          title="History (H)"
+          title="Calculation History (H)"
         >
-          <History size={16} aria-hidden="true" />
+          <History size={15} aria-hidden="true" />
+          <span className={styles.btnLabel}>History</span>
           {historyCount > 0 && <span className={styles.historyBadge}>{historyCount}</span>}
         </button>
 
         {/* Keyboard Shortcuts Trigger */}
         <button
           type="button"
-          className={styles.iconBtn}
+          className={styles.navBtn}
           onClick={onOpenShortcuts}
           aria-label="Keyboard shortcuts"
           title="Keyboard shortcuts (?)"
         >
-          <Keyboard size={16} aria-hidden="true" />
+          <Keyboard size={15} aria-hidden="true" />
+          <span className={styles.btnLabel}>Shortcuts</span>
         </button>
 
         {/* Theme Toggle */}
         <button
           type="button"
-          className={styles.iconBtn}
+          className={styles.iconOnlyBtn}
           onClick={onToggleTheme}
           aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
@@ -109,7 +112,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* About / Info Trigger */}
         <button
           type="button"
-          className={styles.iconBtn}
+          className={styles.iconOnlyBtn}
           onClick={onOpenAbout}
           aria-label="About Arc Calculator"
           title="About Arc Calculator"

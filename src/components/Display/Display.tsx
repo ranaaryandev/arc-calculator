@@ -39,7 +39,6 @@ export const Display: React.FC<DisplayProps> = ({
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(textToCopy)
       } else {
-        // Fallback for non-secure contexts
         const textarea = document.createElement('textarea')
         textarea.value = textToCopy
         textarea.style.position = 'fixed'
@@ -109,7 +108,7 @@ export const Display: React.FC<DisplayProps> = ({
       <div className={`${styles.resultRow} tabular-numbers`} aria-live="polite">
         {error ? (
           <div className={styles.errorResult} role="alert">
-            <AlertCircle size={15} aria-hidden="true" />
+            <AlertCircle size={14} aria-hidden="true" />
             <span>{error}</span>
           </div>
         ) : result !== null ? (
@@ -117,8 +116,10 @@ export const Display: React.FC<DisplayProps> = ({
             {result}
           </div>
         ) : preview !== null ? (
-          <div className={styles.previewResult} aria-label={`Preview: ${preview}`}>
-            = {preview}
+          <div className={styles.previewContainer} aria-label={`Preview result: ${preview}`}>
+            <span className={styles.previewBadge}>Preview</span>
+            <span className={styles.previewResult}>= {preview}</span>
+            <span className={styles.previewHint}>(Press = to save)</span>
           </div>
         ) : (
           <div className={styles.finalResult} aria-label="Result: 0">

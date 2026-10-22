@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Delete } from 'lucide-react'
+import { Delete, Sliders } from 'lucide-react'
 import { KeyButton } from './KeyButton'
 import styles from './Keypad.module.css'
 
@@ -7,7 +7,6 @@ interface KeypadProps {
   onAppend: (char: string) => void
   onInsertFunction: (fn: string) => void
   onInsertConstant: (c: string) => void
-  onInsertParenthesis: () => void
   onBackspace: () => void
   onClearEntry: () => void
   onClearAll: () => void
@@ -21,13 +20,10 @@ interface KeypadProps {
   hasMemory: boolean
 }
 
-type MobileTab = 'standard' | 'scientific'
-
 export const Keypad: React.FC<KeypadProps> = ({
   onAppend,
   onInsertFunction,
   onInsertConstant,
-  onInsertParenthesis,
   onBackspace,
   onClearEntry,
   onClearAll,
@@ -40,235 +36,270 @@ export const Keypad: React.FC<KeypadProps> = ({
   onMemorySubtract,
   hasMemory,
 }) => {
-  const [mobileTab, setMobileTab] = useState<MobileTab>('standard')
+  // Persist or default scientific toggle: open on wider desktop, collapsible on mobile
+  const [isScientificOpen, setIsScientificOpen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = window.localStorage.getItem('arc-calc-show-scientific')
+      if (saved !== null) return saved === 'true'
+      return window.innerWidth > 768
+    }
+    return true
+  })
+
   const [isSecondFunction, setIsSecondFunction] = useState(false)
+
+  const toggleScientific = () => {
+    setIsScientificOpen((prev) => {
+      const next = !prev
+      try {
+        window.localStorage.setItem('arc-calc-show-scientific', String(next))
+      } catch {
+        // Ignore
+      }
+      return next
+    })
+  }
 
   return (
     <div className={styles.keypadContainer}>
-      {/* Memory Bar */}
-      <div className={styles.memoryBar} role="group" aria-label="Memory operations">
+      {/* Top Utilities Bar: Memory Controls + Scientific Toggle */}
+      <div className={styles.topBar}>
+        <div className={styles.memoryBar} role="group" aria-label="Memory operations">
+          <button
+            type="button"
+            className={styles.memoryBtn}
+            onClick={onMemoryClear}
+            disabled={!hasMemory}
+            aria-label="Clear memory"
+            title="Memory Clear (MC)"
+          >
+            MC
+          </button>
+          <button
+            type="button"
+            className={`${styles.memoryBtn} ${hasMemory ? styles.memoryBtnActive : ''}`}
+            onClick={onMemoryRecall}
+            disabled={!hasMemory}
+            aria-label="Recall memory"
+            title="Memory Recall (MR)"
+          >
+            MR
+          </button>
+          <button
+            type="button"
+            className={styles.memoryBtn}
+            onClick={onMemoryAdd}
+            aria-label="Add to memory"
+            title="Memory Add (M+)"
+          >
+            M+
+          </button>
+          <button
+            type="button"
+            className={styles.memoryBtn}
+            onClick={onMemorySubtract}
+            aria-label="Subtract from memory"
+            title="Memory Subtract (M−)"
+          >
+            M−
+          </button>
+          <button
+            type="button"
+            className={styles.memoryBtn}
+            onClick={onMemoryStore}
+            aria-label="Store into memory"
+            title="Memory Store (MS)"
+          >
+            MS
+          </button>
+        </div>
+
+        {/* Scientific Panel Toggle */}
         <button
           type="button"
-          className={styles.memoryBtn}
-          onClick={onMemoryClear}
-          disabled={!hasMemory}
-          aria-label="Clear memory"
-          title="Memory Clear"
+          className={`${styles.scientificToggleBtn} ${
+            isScientificOpen ? styles.scientificToggleActive : ''
+          }`}
+          onClick={toggleScientific}
+          aria-expanded={isScientificOpen}
+          aria-label="Toggle scientific functions section"
         >
-          MC
-        </button>
-        <button
-          type="button"
-          className={`${styles.memoryBtn} ${hasMemory ? styles.memoryBtnActive : ''}`}
-          onClick={onMemoryRecall}
-          disabled={!hasMemory}
-          aria-label="Recall memory"
-          title="Memory Recall"
-        >
-          MR
-        </button>
-        <button
-          type="button"
-          className={styles.memoryBtn}
-          onClick={onMemoryAdd}
-          aria-label="Add to memory"
-          title="Memory Add"
-        >
-          M+
-        </button>
-        <button
-          type="button"
-          className={styles.memoryBtn}
-          onClick={onMemorySubtract}
-          aria-label="Subtract from memory"
-          title="Memory Subtract"
-        >
-          M−
-        </button>
-        <button
-          type="button"
-          className={styles.memoryBtn}
-          onClick={onMemoryStore}
-          aria-label="Store into memory"
-          title="Memory Store"
-        >
-          MS
+          <Sliders size={14} aria-hidden="true" />
+          <span>{isScientificOpen ? 'Hide Scientific' : 'Show Scientific'}</span>
         </button>
       </div>
 
-      {/* Mobile Tab Switcher */}
-      <div className={styles.mobileTabs} role="tablist" aria-label="Keypad views">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mobileTab === 'standard'}
-          className={`${styles.mobileTab} ${mobileTab === 'standard' ? styles.mobileTabActive : ''}`}
-          onClick={() => setMobileTab('standard')}
-        >
-          Standard
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mobileTab === 'scientific'}
-          className={`${styles.mobileTab} ${mobileTab === 'scientific' ? styles.mobileTabActive : ''}`}
-          onClick={() => setMobileTab('scientific')}
-        >
-          Scientific
-        </button>
-      </div>
+      {/* Main Sections: Collapsible Scientific Panel + 4-Column Standard Keypad */}
+      <div className={styles.keypadSections}>
+        {/* SCIENTIFIC PANEL */}
+        {isScientificOpen && (
+          <section className={styles.scientificPanel} aria-label="Scientific functions">
+            <div className={styles.panelHeader}>
+              <span className={styles.panelTitle}>Scientific</span>
+              <button
+                type="button"
+                className={`${styles.secondBtn} ${
+                  isSecondFunction ? styles.secondBtnActive : ''
+                }`}
+                onClick={() => setIsSecondFunction(!isSecondFunction)}
+                aria-pressed={isSecondFunction}
+                title="Toggle 2nd function (inverse trig & powers)"
+              >
+                2nd
+              </button>
+            </div>
 
-      {/* Keypad Grid */}
-      <div
-        className={`${styles.mainGrid} ${
-          mobileTab === 'standard' ? styles.standardOnly : styles.scientificOnly
-        }`}
-      >
-        {/* SCIENTIFIC KEYS (Desktop: 4 columns on left. Mobile: shown in scientific tab) */}
-        {(window.innerWidth > 768 || mobileTab === 'scientific') && (
-          <>
-            {/* Row 1 Scientific */}
-            <KeyButton
-              label="2nd"
-              onClick={() => setIsSecondFunction(!isSecondFunction)}
-              variant="scientific"
-              active={isSecondFunction}
-              ariaLabel="Toggle inverse functions"
-              title="Toggle inverse scientific functions"
-            />
-            <KeyButton
-              label={isSecondFunction ? 'sin⁻¹' : 'sin'}
-              onClick={() => onInsertFunction(isSecondFunction ? 'asin' : 'sin')}
-              variant="scientific"
-              title={isSecondFunction ? 'Inverse sine (Shortcut: S)' : 'Sine (Shortcut: S)'}
-            />
-            <KeyButton
-              label={isSecondFunction ? 'cos⁻¹' : 'cos'}
-              onClick={() => onInsertFunction(isSecondFunction ? 'acos' : 'cos')}
-              variant="scientific"
-              title={isSecondFunction ? 'Inverse cosine (Shortcut: C)' : 'Cosine (Shortcut: C)'}
-            />
-            <KeyButton
-              label={isSecondFunction ? 'tan⁻¹' : 'tan'}
-              onClick={() => onInsertFunction(isSecondFunction ? 'atan' : 'tan')}
-              variant="scientific"
-              title={isSecondFunction ? 'Inverse tangent (Shortcut: T)' : 'Tangent (Shortcut: T)'}
-            />
+            <div className={styles.scientificGrid}>
+              {/* Row 1 */}
+              <KeyButton
+                label={isSecondFunction ? 'sin⁻¹' : 'sin'}
+                onClick={() => onInsertFunction(isSecondFunction ? 'asin' : 'sin')}
+                variant="scientific"
+                title={isSecondFunction ? 'Inverse sine (asin)' : 'Sine (Shortcut: S)'}
+              />
+              <KeyButton
+                label={isSecondFunction ? 'cos⁻¹' : 'cos'}
+                onClick={() => onInsertFunction(isSecondFunction ? 'acos' : 'cos')}
+                variant="scientific"
+                title={isSecondFunction ? 'Inverse cosine (acos)' : 'Cosine (Shortcut: C)'}
+              />
+              <KeyButton
+                label={isSecondFunction ? 'tan⁻¹' : 'tan'}
+                onClick={() => onInsertFunction(isSecondFunction ? 'atan' : 'tan')}
+                variant="scientific"
+                title={isSecondFunction ? 'Inverse tangent (atan)' : 'Tangent (Shortcut: T)'}
+              />
+              <KeyButton
+                label="xʸ"
+                onClick={() => onAppend('^')}
+                variant="scientific"
+                title="Power (x^y)"
+              />
 
-            {/* Row 2 Scientific */}
-            <KeyButton
-              label="xʸ"
-              onClick={() => onAppend('^')}
-              variant="scientific"
-              title="Power (x^y)"
-            />
-            <KeyButton
-              label="x²"
-              onClick={() => onAppend('^2')}
-              variant="scientific"
-              title="Square (x²)"
-            />
-            <KeyButton
-              label="√x"
-              onClick={() => onInsertFunction('sqrt')}
-              variant="scientific"
-              title="Square root (Shortcut: R)"
-            />
-            <KeyButton
-              label="∛x"
-              onClick={() => onInsertFunction('cbrt')}
-              variant="scientific"
-              title="Cube root"
-            />
+              {/* Row 2 */}
+              <KeyButton
+                label={isSecondFunction ? 'eˣ' : 'ln'}
+                onClick={() =>
+                  isSecondFunction ? onInsertFunction('exp') : onInsertFunction('ln')
+                }
+                variant="scientific"
+                title={isSecondFunction ? 'Exponential (e^x)' : 'Natural log (Shortcut: L)'}
+              />
+              <KeyButton
+                label={isSecondFunction ? '10ˣ' : 'log₁₀'}
+                onClick={() =>
+                  isSecondFunction ? onAppend('10^') : onInsertFunction('log10')
+                }
+                variant="scientific"
+                title={isSecondFunction ? '10^x' : 'Log base 10'}
+              />
+              <KeyButton
+                label="log₂"
+                onClick={() => onInsertFunction('log2')}
+                variant="scientific"
+                title="Log base 2"
+              />
+              <KeyButton
+                label="√x"
+                onClick={() => onInsertFunction('sqrt')}
+                variant="scientific"
+                title="Square root (Shortcut: R)"
+              />
 
-            {/* Row 3 Scientific */}
-            <KeyButton
-              label={isSecondFunction ? 'eˣ' : 'ln'}
-              onClick={() =>
-                isSecondFunction ? onInsertFunction('exp') : onInsertFunction('ln')
-              }
-              variant="scientific"
-              title={isSecondFunction ? 'Exponential e^x' : 'Natural logarithm (Shortcut: L)'}
-            />
-            <KeyButton
-              label={isSecondFunction ? '10ˣ' : 'log₁₀'}
-              onClick={() =>
-                isSecondFunction ? onAppend('10^') : onInsertFunction('log10')
-              }
-              variant="scientific"
-              title={isSecondFunction ? 'Base 10 power (10^x)' : 'Logarithm base 10'}
-            />
-            <KeyButton
-              label="log₂"
-              onClick={() => onInsertFunction('log2')}
-              variant="scientific"
-              title="Logarithm base 2"
-            />
-            <KeyButton
-              label="1/x"
-              onClick={() => onAppend('1/')}
-              variant="scientific"
-              title="Reciprocal (1/x)"
-            />
+              {/* Row 3 */}
+              <KeyButton
+                label="1/x"
+                onClick={() => onAppend('1/')}
+                variant="scientific"
+                title="Reciprocal (1/x)"
+              />
+              <KeyButton
+                label="n!"
+                onClick={() => onAppend('!')}
+                variant="scientific"
+                title="Factorial (!)"
+              />
+              <KeyButton
+                label="|x|"
+                onClick={() => onInsertFunction('abs')}
+                variant="scientific"
+                title="Absolute value"
+              />
+              <KeyButton
+                label="∛x"
+                onClick={() => onInsertFunction('cbrt')}
+                variant="scientific"
+                title="Cube root"
+              />
 
-            {/* Row 4 Scientific */}
-            <KeyButton
-              label="n!"
-              onClick={() => onAppend('!')}
-              variant="scientific"
-              title="Factorial (!)"
-            />
-            <KeyButton
-              label="|x|"
-              onClick={() => onInsertFunction('abs')}
-              variant="scientific"
-              title="Absolute value"
-            />
-            <KeyButton
-              label="π"
-              onClick={() => onInsertConstant('pi')}
-              variant="scientific"
-              title="Pi constant (Shortcut: P)"
-            />
-            <KeyButton
-              label="e"
-              onClick={() => onInsertConstant('e')}
-              variant="scientific"
-              title="Euler constant e (Shortcut: E)"
-            />
+              {/* Row 4 */}
+              <KeyButton
+                label="π"
+                onClick={() => onInsertConstant('pi')}
+                variant="scientific"
+                title="Pi constant (Shortcut: P)"
+              />
+              <KeyButton
+                label="e"
+                onClick={() => onInsertConstant('e')}
+                variant="scientific"
+                title="Euler constant e (Shortcut: E)"
+              />
+              <KeyButton
+                label="sinh"
+                onClick={() => onInsertFunction('sinh')}
+                variant="scientific"
+                title="Hyperbolic sine"
+              />
+              <KeyButton
+                label="cosh"
+                onClick={() => onInsertFunction('cosh')}
+                variant="scientific"
+                title="Hyperbolic cosine"
+              />
 
-            {/* Row 5 Scientific */}
-            <KeyButton
-              label="sinh"
-              onClick={() => onInsertFunction('sinh')}
-              variant="scientific"
-              title="Hyperbolic sine"
-            />
-            <KeyButton
-              label="cosh"
-              onClick={() => onInsertFunction('cosh')}
-              variant="scientific"
-              title="Hyperbolic cosine"
-            />
-            <KeyButton
-              label="tanh"
-              onClick={() => onInsertFunction('tanh')}
-              variant="scientific"
-              title="Hyperbolic tangent"
-            />
-            <KeyButton
-              label="ʸ√x"
-              onClick={() => onInsertFunction('root')}
-              variant="scientific"
-              title="Nth root (root(n, x))"
-            />
-          </>
+              {/* Row 5 */}
+              <KeyButton
+                label="tanh"
+                onClick={() => onInsertFunction('tanh')}
+                variant="scientific"
+                title="Hyperbolic tangent"
+              />
+              <KeyButton
+                label="ʸ√x"
+                onClick={() => onInsertFunction('root')}
+                variant="scientific"
+                title="Nth root (root(n, x))"
+              />
+              <KeyButton
+                label="x²"
+                onClick={() => onAppend('^2')}
+                variant="scientific"
+                title="Square (x²)"
+              />
+              <KeyButton
+                label="x³"
+                onClick={() => onAppend('^3')}
+                variant="scientific"
+                title="Cube (x³)"
+              />
+            </div>
+          </section>
         )}
 
-        {/* STANDARD KEYS (Desktop: 5 columns on right. Mobile: shown in standard tab) */}
-        {(window.innerWidth > 768 || mobileTab === 'standard') && (
-          <>
-            {/* Standard Row 1 */}
+        {/* UNMISTAKABLE 4-COLUMN STANDARD KEYPAD */}
+        <section
+          className={`${styles.standardSection} ${
+            !isScientificOpen ? styles.standardSectionFull : ''
+          }`}
+          aria-label="Standard keypad"
+        >
+          <div className={styles.standardHeader}>
+            <span className={styles.standardTitle}>Keypad</span>
+          </div>
+
+          <div className={styles.standardGrid}>
+            {/* Top Row: AC, C, Backspace, % */}
             <KeyButton
               label="AC"
               onClick={onClearAll}
@@ -279,7 +310,7 @@ export const Keypad: React.FC<KeypadProps> = ({
               label="C"
               onClick={onClearEntry}
               variant="action"
-              title="Clear current entry (Escape)"
+              title="Clear entry (Escape)"
             />
             <KeyButton
               label={<Delete size={18} aria-hidden="true" />}
@@ -289,19 +320,13 @@ export const Keypad: React.FC<KeypadProps> = ({
               title="Backspace"
             />
             <KeyButton
-              label="("
-              onClick={onInsertParenthesis}
+              label="%"
+              onClick={() => onAppend('%')}
               variant="operator"
-              title="Parenthesis"
-            />
-            <KeyButton
-              label="÷"
-              onClick={() => onAppend('/')}
-              variant="operator"
-              title="Divide (/)"
+              title="Percent (%)"
             />
 
-            {/* Standard Row 2 */}
+            {/* Row 1: 7, 8, 9, ÷ */}
             <KeyButton
               label="7"
               onClick={() => onAppend('7')}
@@ -318,19 +343,13 @@ export const Keypad: React.FC<KeypadProps> = ({
               variant="number"
             />
             <KeyButton
-              label="%"
-              onClick={() => onAppend('%')}
+              label="÷"
+              onClick={() => onAppend('/')}
               variant="operator"
-              title="Percent (%)"
-            />
-            <KeyButton
-              label="×"
-              onClick={() => onAppend('*')}
-              variant="operator"
-              title="Multiply (*)"
+              title="Divide (/)"
             />
 
-            {/* Standard Row 3 */}
+            {/* Row 2: 4, 5, 6, × */}
             <KeyButton
               label="4"
               onClick={() => onAppend('4')}
@@ -347,19 +366,13 @@ export const Keypad: React.FC<KeypadProps> = ({
               variant="number"
             />
             <KeyButton
-              label="±"
-              onClick={onToggleSign}
+              label="×"
+              onClick={() => onAppend('*')}
               variant="operator"
-              title="Toggle sign (+/-)"
-            />
-            <KeyButton
-              label="−"
-              onClick={() => onAppend('-')}
-              variant="operator"
-              title="Subtract (-)"
+              title="Multiply (*)"
             />
 
-            {/* Standard Row 4 */}
+            {/* Row 3: 1, 2, 3, − */}
             <KeyButton
               label="1"
               onClick={() => onAppend('1')}
@@ -376,24 +389,23 @@ export const Keypad: React.FC<KeypadProps> = ({
               variant="number"
             />
             <KeyButton
-              label=")"
-              onClick={() => onAppend(')')}
+              label="−"
+              onClick={() => onAppend('-')}
               variant="operator"
-              title="Close parenthesis"
-            />
-            <KeyButton
-              label="+"
-              onClick={() => onAppend('+')}
-              variant="operator"
-              title="Add (+)"
+              title="Subtract (-)"
             />
 
-            {/* Standard Row 5 */}
+            {/* Row 4: ±, 0, ., + */}
+            <KeyButton
+              label="±"
+              onClick={onToggleSign}
+              variant="operator"
+              title="Toggle sign (+/-)"
+            />
             <KeyButton
               label="0"
               onClick={() => onAppend('0')}
               variant="number"
-              spanTwo
             />
             <KeyButton
               label="."
@@ -402,14 +414,34 @@ export const Keypad: React.FC<KeypadProps> = ({
               title="Decimal point"
             />
             <KeyButton
+              label="+"
+              onClick={() => onAppend('+')}
+              variant="operator"
+              title="Add (+)"
+            />
+
+            {/* Row 5: Parentheses & Prominent Equals */}
+            <KeyButton
+              label="("
+              onClick={() => onAppend('(')}
+              variant="operator"
+              title="Open parenthesis ("
+            />
+            <KeyButton
+              label=")"
+              onClick={() => onAppend(')')}
+              variant="operator"
+              title="Close parenthesis )"
+            />
+            <KeyButton
               label="="
               onClick={onCalculate}
               variant="primary"
               spanTwo
               title="Calculate (Enter or =)"
             />
-          </>
-        )}
+          </div>
+        </section>
       </div>
     </div>
   )

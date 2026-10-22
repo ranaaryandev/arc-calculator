@@ -57,7 +57,7 @@ describe('Arc Calculator UI & Accessibility', () => {
 
   it('opens history drawer and shows empty state', () => {
     render(<App />)
-    const historyBtn = screen.getByTitle('History (H)')
+    const historyBtn = screen.getByRole('button', { name: /calculation history/i })
     fireEvent.click(historyBtn)
 
     expect(screen.getByRole('dialog', { name: 'Calculation History' })).toBeInTheDocument()

@@ -6,6 +6,8 @@
   background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border-subtle);
   width: 100%;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
 .brand {
@@ -15,21 +17,22 @@
 }
 
 .logoIcon {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   color: var(--accent-primary);
+  flex-shrink: 0;
 }
 
 .title {
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text-primary);
 }
 
 .versionBadge {
   font-size: 0.7rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-muted);
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
@@ -41,6 +44,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  flex-wrap: wrap;
 }
 
 /* DEG / RAD segmented switch */
@@ -53,9 +57,9 @@
 }
 
 .modeOption {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
   transition: all var(--transition-fast);
@@ -67,7 +71,37 @@
   box-shadow: var(--shadow-sm);
 }
 
-.iconBtn {
+/* Clear, accessible text-labeled action buttons */
+.navBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  transition: all var(--transition-fast);
+  position: relative;
+  white-space: nowrap;
+}
+
+.navBtn:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+.navBtnActive {
+  background: var(--accent-subtle);
+  color: var(--accent-primary);
+  border-color: var(--accent-border);
+}
+
+.iconOnlyBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -78,25 +112,15 @@
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
   transition: all var(--transition-fast);
-  position: relative;
 }
 
-.iconBtn:hover {
+.iconOnlyBtn:hover {
   background: var(--bg-surface-hover);
   color: var(--text-primary);
   border-color: var(--border-default);
 }
 
-.activeIconBtn {
-  background: var(--accent-subtle);
-  color: var(--accent-primary);
-  border-color: var(--accent-border);
-}
-
 .historyBadge {
-  position: absolute;
-  top: -4px;
-  right: -4px;
   background: var(--accent-primary);
   color: var(--accent-primary-text);
   font-size: 0.65rem;
@@ -104,8 +128,18 @@
   min-width: 16px;
   height: 16px;
   border-radius: 9999px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0 4px;
+  margin-left: 2px;
+}
+
+@media (max-width: 600px) {
+  .btnLabel {
+    display: none;
+  }
+  .navBtn {
+    padding: 0 8px;
+  }
 }
