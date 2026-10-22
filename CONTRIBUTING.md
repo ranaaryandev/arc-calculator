@@ -6,7 +6,7 @@ Thank you for your interest in contributing to Arc Calculator! We welcome high-q
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/ranaaryan-work/arc-calculator.git
+   git clone https://github.com/ranaaryandev/arc-calculator.git
    cd arc-calculator
    ```
 

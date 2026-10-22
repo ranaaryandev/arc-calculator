@@ -1,5 +1,5 @@
 import React from 'react'
-import { Sun, Moon, History, Keyboard, Info, Calculator, ArrowRightLeft, Atom } from 'lucide-react'
+import { Sun, Moon, History, Keyboard, Info, Calculator, ArrowRightLeft, Atom, TrendingUp } from 'lucide-react'
 import type { AngleMode } from '../../calculator/types'
 import type { Theme } from '../../hooks/useTheme'
 import { APP_CONFIG } from '../../config/appConfig'
@@ -17,6 +17,7 @@ interface HeaderProps {
   onOpenAbout: () => void
   onOpenUnitConverter: () => void
   onOpenConstants: () => void
+  onOpenGraph?: () => void
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -31,6 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAbout,
   onOpenUnitConverter,
   onOpenConstants,
+  onOpenGraph,
 }) => {
   return (
     <header className={styles.header}>
@@ -85,6 +87,18 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <Atom size={15} aria-hidden="true" />
           <span className={styles.btnLabel}>Constants</span>
+        </button>
+
+        {/* 2D Function Grapher Trigger */}
+        <button
+          type="button"
+          className={styles.navBtn}
+          onClick={onOpenGraph}
+          aria-label="2D Function Grapher"
+          title="Open 2D function grapher"
+        >
+          <TrendingUp size={15} aria-hidden="true" />
+          <span className={styles.btnLabel}>Graph</span>
         </button>
 
         {/* History Toggle */}

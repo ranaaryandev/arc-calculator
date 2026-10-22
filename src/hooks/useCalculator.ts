@@ -17,6 +17,42 @@ export function useCalculator() {
   const [lastRawValue, setLastRawValue] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isNewCalculation, setIsNewCalculation] = useState(false)
+  const [undoStack, setUndoStack] = useState<string[]>([])
+  const [redoStack, setRedoStack] = useState<string[]>([])
+
+  const pushUndo = useCallback((currentExpr: string) => {
+    setUndoStack((prev) => {
+      if (prev.length > 0 && prev[prev.length - 1] === currentExpr) return prev
+      return [...prev.slice(-30), currentExpr]
+    })
+    setRedoStack([])
+  }, [])
+
+  const undo = useCallback(() => {
+    setUndoStack((prevUndo) => {
+      if (prevUndo.length === 0) return prevUndo
+      const target = prevUndo[prevUndo.length - 1]
+      const nextUndo = prevUndo.slice(0, -1)
+      setRedoStack((prevRedo) => [expression, ...prevRedo.slice(0, 30)])
+      setExpression(target)
+      setCursorPos(target.length)
+      setError(null)
+      return nextUndo
+    })
+  }, [expression, setCursorPos])
+
+  const redo = useCallback(() => {
+    setRedoStack((prevRedo) => {
+      if (prevRedo.length === 0) return prevRedo
+      const target = prevRedo[0]
+      const nextRedo = prevRedo.slice(1)
+      setUndoStack((prevUndo) => [...prevUndo.slice(-30), expression])
+      setExpression(target)
+      setCursorPos(target.length)
+      setError(null)
+      return nextRedo
+    })
+  }, [expression, setCursorPos])
 
   // Persisted settings
   const [angleMode, setAngleMode] = useLocalStorage<AngleMode>('arc-calc-angle-mode', 'DEG')
@@ -38,15 +74,17 @@ export function useCalculator() {
 
   // Direct expression editing from text input
   const updateExpressionDirect = useCallback((newExpr: string, newPos?: number) => {
+    pushUndo(expression)
     setError(null)
     setIsNewCalculation(false)
     setExpression(newExpr)
     setCursorPos(newPos !== undefined ? newPos : newExpr.length)
-  }, [setCursorPos])
+  }, [expression, pushUndo, setCursorPos])
 
   // Insert string at cursor position
   const append = useCallback(
     (val: string) => {
+      pushUndo(expression)
       setError(null)
 
       if (isNewCalculation) {
@@ -84,12 +122,13 @@ export function useCalculator() {
         return nextExpr
       })
     },
-    [isNewCalculation, lastRawValue, result, setCursorPos]
+    [expression, pushUndo, isNewCalculation, lastRawValue, result, setCursorPos]
   )
 
   // Insert scientific function e.g. sin(, sqrt(, ln( at cursor position
   const insertFunction = useCallback(
     (fnName: string) => {
+      pushUndo(expression)
       setError(null)
       if (isNewCalculation && lastRawValue !== null) {
         setIsNewCalculation(false)
@@ -109,12 +148,13 @@ export function useCalculator() {
         return left + token + right
       })
     },
-    [isNewCalculation, lastRawValue, setCursorPos]
+    [expression, pushUndo, isNewCalculation, lastRawValue, setCursorPos]
   )
 
   // Insert constant e.g. pi, e
   const insertConstant = useCallback(
     (constName: string) => {
+      pushUndo(expression)
       setError(null)
       if (isNewCalculation) {
         setIsNewCalculation(false)
@@ -125,11 +165,12 @@ export function useCalculator() {
 
       append(constName)
     },
-    [isNewCalculation, append, setCursorPos]
+    [expression, pushUndo, isNewCalculation, append, setCursorPos]
   )
 
   // Backspace at cursor position
   const backspace = useCallback(() => {
+    pushUndo(expression)
     setError(null)
     setExpression((prev) => {
       const curPos = cursorPosRef.current
@@ -156,27 +197,30 @@ export function useCalculator() {
       setCursorPos(pos - 1)
       return left.slice(0, -1) + right
     })
-  }, [setCursorPos])
+  }, [expression, pushUndo, setCursorPos])
 
   // Clear entry / current expression
   const clearEntry = useCallback(() => {
+    pushUndo(expression)
     setExpression('')
     setCursorPos(0)
     setError(null)
-  }, [setCursorPos])
+  }, [expression, pushUndo, setCursorPos])
 
   // Clear all
   const clearAll = useCallback(() => {
+    pushUndo(expression)
     setExpression('')
     setCursorPos(0)
     setResult(null)
     setLastRawValue(null)
     setError(null)
     setIsNewCalculation(false)
-  }, [setCursorPos])
+  }, [expression, pushUndo, setCursorPos])
 
   // Sign toggle (+/-)
   const toggleSign = useCallback(() => {
+    pushUndo(expression)
     setError(null)
     setExpression((prev) => {
       if (!prev) {
@@ -206,7 +250,7 @@ export function useCalculator() {
       setCursorPos(next.length)
       return next
     })
-  }, [setCursorPos])
+  }, [expression, pushUndo, setCursorPos])
 
   // Execute Calculation
   const calculate = useCallback(() => {
@@ -334,6 +378,10 @@ export function useCalculator() {
     clearAll,
     toggleSign,
     calculate,
+    undo,
+    redo,
+    canUndo: undoStack.length > 0,
+    canRedo: redoStack.length > 0,
     toggleAngleMode,
     memoryClear,
     memoryRecall,

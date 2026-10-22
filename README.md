@@ -78,6 +78,8 @@
 | `E` | Insert Constant $e$ |
 | `D` | Toggle Angle Mode (`DEG` $\leftrightarrow$ `RAD`) |
 | `?` | Open Keyboard Shortcuts Guide |
+| `Ctrl` + `Z` / `Cmd` + `Z` | Undo expression edit |
+| `Ctrl` + `Y` / `Cmd` + `Shift` + `Z` | Redo expression edit |
 
 ---
 
@@ -87,7 +89,7 @@
 - **Build Tool**: [Vite 8](https://vitejs.dev/)
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **Styling**: Vanilla CSS Modules with strict CSS Design Tokens (`tokens.css`)
-- **Testing**: [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) (61 tests)
+- **Testing**: [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) (100 tests across 6 test suites)
 - **Linter**: [Oxlint](https://oxc.rs/)
 - **Deployment**: GitHub Pages via GitHub Actions
 
@@ -124,7 +126,7 @@ Open `http://localhost:5173` (or the port output in your terminal) in your brows
 
 ## Testing & Quality Assurance
 
-Arc Calculator includes a comprehensive 61-test suite covering arithmetic precedence, trigonometry, logarithms, domain errors, React hooks, and accessibility.
+Arc Calculator includes a comprehensive 100-test suite across 6 test suites covering arithmetic precedence, associativity, trigonometry, logarithms, domain errors, fuzzing/adversarial expressions, React hooks, storage failure resilience, and accessibility.
 
 ```bash
 # Run all unit and integration tests
@@ -147,11 +149,13 @@ npm run build
 | Operation | Syntax Example | Notes |
 | :--- | :--- | :--- |
 | Addition / Subtraction | `2 + 3`, `12 - 5` | Also supports unicode minus (`−`) |
+| Unary Minus / Plus | `-2^2`, `(-2)^2` | Conventional mathematical precedence: `-2^2 = -4`, `(-2)^2 = 4` |
 | Multiplication / Division | `6 * 7`, `15 / 3` | Supports `×`, `÷`, and implicit multiplication `2(3)` |
-| Exponentiation | `2^10`, `2^3^2` | Right-associative: $2^{(3^2)} = 512$ |
+| Modulo | `10 % 3`, `mod(10, 3)` | Binary operator & functional modulo (`10 % 3 = 1`) |
+| Exponentiation | `2^10`, `2^3^2`, `2^-3` | Right-associative: $2^{(3^2)} = 512$; $2^{-3} = 0.125$ |
 | Percentage | `100 + 10%`, `50 * 20%` | $100 + 10\% = 110$; standalone `50%` $= 0.5$ |
-| Square Root / Cube Root | `sqrt(81)`, `cbrt(27)` | Real domain: negative roots rejected |
-| Arbitrary Root | `root(3, 27)` | Evaluates $\sqrt[n]{x}$ |
+| Square Root / Cube Root | `sqrt(81)`, `cbrt(27)` | Real domain: `sqrt(-1)` produces clear domain error |
+| Arbitrary Root | `root(3, -8)`, `root(3, 27)` | Evaluates $\sqrt[n]{x}$; odd integer roots of negative numbers supported (`root(3, -8) = -2`) |
 | Factorial | `5!`, `0!` | Non-negative integers $\le 170$ |
 | Natural & Base-10 Log | `ln(e)`, `log10(1000)` | Domain: $x > 0$ |
 | Trigonometry | `sin(30)`, `cos(60)`, `tan(45)` | Evaluated according to active DEG/RAD mode |
@@ -252,11 +256,13 @@ arc-calculator/
 │   ├── styles/
 │   │   ├── global.css             # Resets, animations, & accessibility
 │   │   └── tokens.css             # Design tokens (colors, radii, spacing)
-│   ├── test/                      # Vitest & RTL test suites
+│   ├── test/                      # Vitest & RTL test suites (100 tests)
 │   │   ├── calculator-hook.test.ts# Hook integration tests
 │   │   ├── evaluator.test.ts      # Mathematical engine tests
 │   │   ├── formatter.test.ts      # Number formatting tests
+│   │   ├── regression-and-adversarial.test.ts # Operator precedence, modulo, & fuzz tests
 │   │   ├── setup.ts               # Test environment setup
+│   │   ├── storage.test.ts        # Storage failure resilience tests
 │   │   └── ui.test.tsx            # Component & accessibility tests
 │   ├── App.tsx                    # Root application component
 │   └── main.tsx                   # DOM entry point

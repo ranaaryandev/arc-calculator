@@ -1,5 +1,6 @@
 import type { Token } from './types'
-import { SUPPORTED_CONSTANTS, SUPPORTED_FUNCTIONS } from './constants'
+import { CalculatorException } from './types'
+import { SUPPORTED_CONSTANTS, SUPPORTED_FUNCTIONS, LIMITS } from './constants'
 
 export function normalizeInput(input: string): string {
   return input
@@ -7,15 +8,30 @@ export function normalizeInput(input: string): string {
     .replace(/\u00F7/g, '/') // division sign ÷
     .replace(/\u2212/g, '-') // minus sign −
     .replace(/\u03C0/g, 'pi') // greek pi π
-    .replace(/,/g, ',') // commas preserved for multi-arg functions e.g. root(3, 27)
 }
 
 export function tokenize(rawInput: string): Token[] {
+  if (rawInput.length > LIMITS.MAX_INPUT_LENGTH) {
+    throw new CalculatorException(
+      'INPUT_TOO_LONG',
+      `Expression exceeds maximum allowed length of ${LIMITS.MAX_INPUT_LENGTH} characters`,
+      LIMITS.MAX_INPUT_LENGTH
+    )
+  }
+
   const input = normalizeInput(rawInput).trim()
   const tokens: Token[] = []
   let i = 0
 
   while (i < input.length) {
+    if (tokens.length >= LIMITS.MAX_TOKEN_COUNT) {
+      throw new CalculatorException(
+        'EXPRESSION_TOO_COMPLEX',
+        `Expression exceeds maximum allowed token count of ${LIMITS.MAX_TOKEN_COUNT}`,
+        i
+      )
+    }
+
     const char = input[i]
 
     // Skip whitespace
@@ -24,8 +40,7 @@ export function tokenize(rawInput: string): Token[] {
       continue
     }
 
-    // Number matching (including scientific notation like 1.5e-3 or 2e10)
-    // Note: standalone 'e' is not a number unless preceded by digits!
+    // Number matching (including floating point and scientific notation like 1.5e-3 or 2e10)
     if (/[0-9]/.test(char) || (char === '.' && i + 1 < input.length && /[0-9]/.test(input[i + 1]))) {
       const start = i
       let hasDecimal = char === '.'
@@ -39,7 +54,6 @@ export function tokenize(rawInput: string): Token[] {
           hasDecimal = true
           i++
         } else if ((c === 'e' || c === 'E') && i + 1 < input.length) {
-          // Check if followed by optional sign and at least one digit
           const next = input[i + 1]
           if (/[0-9]/.test(next)) {
             i += 2
@@ -50,7 +64,7 @@ export function tokenize(rawInput: string): Token[] {
             while (i < input.length && /[0-9]/.test(input[i])) i++
             break
           } else {
-            break // Not scientific notation, 'e' belongs to something else
+            break // Standalone 'e' or not scientific notation
           }
         } else {
           break
@@ -73,7 +87,7 @@ export function tokenize(rawInput: string): Token[] {
       }
       const rawIdent = input.slice(start, i).toLowerCase()
 
-      if (rawIdent === 'pi' || rawIdent === 'e') {
+      if (rawIdent === 'pi' || rawIdent === 'e' || rawIdent === 'x') {
         tokens.push({
           type: 'IDENTIFIER',
           value: rawIdent,
@@ -86,7 +100,11 @@ export function tokenize(rawInput: string): Token[] {
           position: start,
         })
       } else {
-        throw new Error(`Unknown function or constant: "${rawIdent}" at character ${start + 1}`)
+        throw new CalculatorException(
+          'UNKNOWN_IDENTIFIER',
+          `Unknown function or constant "${rawIdent}" at character ${start + 1}`,
+          start
+        )
       }
       continue
     }
@@ -103,7 +121,7 @@ export function tokenize(rawInput: string): Token[] {
       continue
     }
 
-    // Comma (for functions with multiple arguments like root(3, 27))
+    // Comma (for multi-argument functions e.g. root(3, 27) or mod(10, 3))
     if (char === ',') {
       tokens.push({ type: 'COMMA', value: ',', position: i })
       i++
@@ -117,9 +135,26 @@ export function tokenize(rawInput: string): Token[] {
       continue
     }
 
-    // Percentage sign
+    // Percentage sign vs Binary Modulo:
+    // If % is followed by an operand start (digit, letter, '('), it functions as binary modulo (e.g. 10 % 3 = 1).
+    // Otherwise, it functions as postfix percentage (e.g. 50%, 100 + 10%, (50%)).
     if (char === '%') {
-      tokens.push({ type: 'POSTFIX', value: '%', position: i })
+      let nextIdx = i + 1
+      while (nextIdx < input.length && /\s/.test(input[nextIdx])) nextIdx++
+      const nextChar = nextIdx < input.length ? input[nextIdx] : ''
+      const isBinaryModulo =
+        /[0-9]/.test(nextChar) ||
+        /[a-zA-Z]/.test(nextChar) ||
+        nextChar === '(' ||
+        ((nextChar === '+' || nextChar === '-') &&
+          nextIdx + 1 < input.length &&
+          /[0-9a-zA-Z(]/.test(input[nextIdx + 1]))
+
+      if (isBinaryModulo) {
+        tokens.push({ type: 'OPERATOR', value: '%', position: i })
+      } else {
+        tokens.push({ type: 'POSTFIX', value: '%', position: i })
+      }
       i++
       continue
     }
@@ -131,7 +166,11 @@ export function tokenize(rawInput: string): Token[] {
       continue
     }
 
-    throw new Error(`Unexpected character "${char}" at character ${i + 1}`)
+    throw new CalculatorException(
+      'SYNTAX_ERROR',
+      `Unexpected character "${char}" at character ${i + 1}`,
+      i
+    )
   }
 
   // Insert implicit multiplication tokens
@@ -148,7 +187,7 @@ export function tokenize(rawInput: string): Token[] {
  * - RPAREN followed by NUMBER (e.g. (2)3 -> (2) * 3)
  * - RPAREN followed by IDENTIFIER (e.g. (2)pi -> (2) * pi)
  * - CONSTANT followed by LPAREN, NUMBER, or IDENTIFIER (e.g. pi(2) -> pi * (2))
- * - POSTFIX (!) followed by NUMBER, LPAREN, or IDENTIFIER
+ * - POSTFIX (!) followed by NUMBER, LPAREN, or IDENTIFIER (e.g. 5!(2) -> 5! * (2))
  */
 function insertImplicitMultiplication(tokens: Token[]): Token[] {
   const result: Token[] = []
@@ -160,7 +199,8 @@ function insertImplicitMultiplication(tokens: Token[]): Token[] {
     if (i === tokens.length - 1) break
     const next = tokens[i + 1]
 
-    const currIsConstant = curr.type === 'IDENTIFIER' && SUPPORTED_CONSTANTS.has(curr.value)
+    const currIsConstant =
+      curr.type === 'IDENTIFIER' && (SUPPORTED_CONSTANTS.has(curr.value) || curr.value === 'x')
     const nextIsFunctionOrConstant = next.type === 'IDENTIFIER'
 
     const shouldInsertMultiply =

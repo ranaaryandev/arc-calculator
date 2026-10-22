@@ -1,4 +1,5 @@
 import type { EvaluationOptions, EvaluationResult } from './types'
+import { CalculatorException } from './types'
 import { parse } from './parser'
 import { evaluateAST } from './evaluator'
 import { formatResult } from './formatter'
@@ -24,6 +25,8 @@ export function evaluateExpression(
       value: 0,
       formatted: '0',
       error: null,
+      errorCode: null,
+      errorPosition: null,
       isPartial: false,
     }
   }
@@ -38,14 +41,28 @@ export function evaluateExpression(
         showUnrounded: options.showUnrounded,
       }),
       error: null,
+      errorCode: null,
+      errorPosition: null,
       isPartial: false,
     }
   } catch (err: unknown) {
+    if (err instanceof CalculatorException) {
+      return {
+        value: 0,
+        formatted: '',
+        error: err.message,
+        errorCode: err.code,
+        errorPosition: err.position ?? null,
+        isPartial: false,
+      }
+    }
     const message = err instanceof Error ? err.message : 'Evaluation error'
     return {
       value: 0,
       formatted: '',
       error: message,
+      errorCode: 'SYNTAX_ERROR',
+      errorPosition: null,
       isPartial: false,
     }
   }
@@ -100,8 +117,8 @@ export function calculateLivePreview(
     }
   }
 
-  // If ends with binary operator (+, -, *, /, ^), ignore trailing operator for preview
-  const stripped = trimmed.replace(/[+\-*/^]\s*$/, '')
+  // If ends with binary operator (+, -, *, /, ^, %), ignore trailing operator for preview
+  const stripped = trimmed.replace(/[+\-*/^%]\s*$/, '')
   if (stripped && stripped !== trimmed) {
     try {
       const ast = parse(stripped)

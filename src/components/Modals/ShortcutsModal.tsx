@@ -63,6 +63,14 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
                 <span className={styles.shortcutLabel}>Modulo / Percent</span>
                 <span className={styles.kbd}>%</span>
               </div>
+              <div className={styles.shortcutItem}>
+                <span className={styles.shortcutLabel}>Undo edit</span>
+                <span className={styles.kbd}>Ctrl + Z</span>
+              </div>
+              <div className={styles.shortcutItem}>
+                <span className={styles.shortcutLabel}>Redo edit</span>
+                <span className={styles.kbd}>Ctrl + Y</span>
+              </div>
             </div>
           </div>
 

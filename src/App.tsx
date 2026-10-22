@@ -7,6 +7,7 @@ import { ShortcutsModal } from './components/Modals/ShortcutsModal'
 import { AboutModal } from './components/Modals/AboutModal'
 import { UnitConverterModal } from './components/Modals/UnitConverterModal'
 import { ConstantsModal } from './components/Modals/ConstantsModal'
+import { GraphModal } from './components/Modals/GraphModal'
 import { Footer } from './components/Footer/Footer'
 import { useCalculator } from './hooks/useCalculator'
 import { useTheme } from './hooks/useTheme'
@@ -21,6 +22,7 @@ export const App: React.FC = () => {
   const [isAboutOpen, setIsAboutOpen] = useState(false)
   const [isConverterOpen, setIsConverterOpen] = useState(false)
   const [isConstantsOpen, setIsConstantsOpen] = useState(false)
+  const [isGraphOpen, setIsGraphOpen] = useState(false)
 
   const calc = useCalculator()
 
@@ -40,8 +42,10 @@ export const App: React.FC = () => {
       onInsertConstant: calc.insertConstant,
       onToggleAngleMode: calc.toggleAngleMode,
       onToggleShortcutsModal: () => setIsShortcutsOpen((prev) => !prev),
+      onUndo: calc.undo,
+      onRedo: calc.redo,
     },
-    !isShortcutsOpen && !isAboutOpen && !isConverterOpen && !isConstantsOpen
+    !isShortcutsOpen && !isAboutOpen && !isConverterOpen && !isConstantsOpen && !isGraphOpen
   )
 
   const handleClearAllData = () => {
@@ -67,6 +71,7 @@ export const App: React.FC = () => {
           onOpenAbout={() => setIsAboutOpen(true)}
           onOpenUnitConverter={() => setIsConverterOpen(true)}
           onOpenConstants={() => setIsConstantsOpen(true)}
+          onOpenGraph={() => setIsGraphOpen(true)}
         />
 
         {/* Display with Expression, Live Preview, Result, Memory Badge */}
@@ -75,6 +80,10 @@ export const App: React.FC = () => {
           cursorPos={calc.cursorPos}
           onUpdateExpression={calc.updateExpressionDirect}
           onCalculate={calc.calculate}
+          onUndo={calc.undo}
+          onRedo={calc.redo}
+          canUndo={calc.canUndo}
+          canRedo={calc.canRedo}
           result={calc.result}
           preview={calc.preview}
           error={calc.error}
@@ -144,6 +153,12 @@ export const App: React.FC = () => {
         isOpen={isConstantsOpen}
         onClose={() => setIsConstantsOpen(false)}
         onInsertConstant={calc.append}
+      />
+
+      {/* 2D Function Grapher Dialog */}
+      <GraphModal
+        isOpen={isGraphOpen}
+        onClose={() => setIsGraphOpen(false)}
       />
     </div>
   )

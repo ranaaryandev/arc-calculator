@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Copy, Check, AlertCircle } from 'lucide-react'
+import { Copy, Check, AlertCircle, Undo2, Redo2 } from 'lucide-react'
 import type { AngleMode } from '../../calculator/types'
 import styles from './Display.module.css'
 
@@ -8,6 +8,10 @@ interface DisplayProps {
   cursorPos: number
   onUpdateExpression: (expr: string, pos?: number) => void
   onCalculate: () => void
+  onUndo?: () => void
+  onRedo?: () => void
+  canUndo?: boolean
+  canRedo?: boolean
   result: string | null
   preview: string | null
   error: string | null
@@ -26,6 +30,10 @@ export const Display: React.FC<DisplayProps> = ({
   cursorPos,
   onUpdateExpression,
   onCalculate,
+  onUndo,
+  onRedo,
+  canUndo = false,
+  canRedo = false,
   result,
   preview,
   error,
@@ -125,6 +133,30 @@ export const Display: React.FC<DisplayProps> = ({
         </div>
 
         <div className={styles.statusControls}>
+          {/* Undo / Redo */}
+          <div className={styles.undoRedoGroup} role="group" aria-label="Undo and Redo">
+            <button
+              type="button"
+              className={styles.iconBtn}
+              onClick={onUndo}
+              disabled={!canUndo}
+              aria-label="Undo expression edit"
+              title="Undo (Ctrl+Z)"
+            >
+              <Undo2 size={13} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className={styles.iconBtn}
+              onClick={onRedo}
+              disabled={!canRedo}
+              aria-label="Redo expression edit"
+              title="Redo (Ctrl+Y)"
+            >
+              <Redo2 size={13} aria-hidden="true" />
+            </button>
+          </div>
+
           {/* Decimal Precision Selector */}
           <select
             className={styles.precisionSelect}

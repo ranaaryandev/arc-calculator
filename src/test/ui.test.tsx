@@ -81,4 +81,45 @@ describe('Arc Calculator UI & Accessibility', () => {
     expect(screen.getByRole('dialog', { name: 'Unit Converter' })).toBeInTheDocument()
     expect(screen.getByText('Unit Converter Catalog')).toBeInTheDocument()
   })
+
+  it('supports undo and redo for expression editing', () => {
+    render(<App />)
+    const undoBtn = screen.getByLabelText('Undo expression edit')
+    const redoBtn = screen.getByLabelText('Redo expression edit')
+
+    expect(undoBtn).toBeDisabled()
+    expect(redoBtn).toBeDisabled()
+
+    // Type 7
+    fireEvent.click(screen.getByRole('button', { name: '7' }))
+    expect(undoBtn).not.toBeDisabled()
+
+    // Type 8
+    fireEvent.click(screen.getByRole('button', { name: '8' }))
+    const input = screen.getByLabelText('Expression editor') as HTMLInputElement
+    expect(input.value).toBe('78')
+
+    // Click Undo -> reverts back to '7'
+    fireEvent.click(undoBtn)
+    expect(input.value).toBe('7')
+    expect(redoBtn).not.toBeDisabled()
+
+    // Click Redo -> restores '78'
+    fireEvent.click(redoBtn)
+    expect(input.value).toBe('78')
+  })
+
+  it('opens and closes 2D function grapher modal', () => {
+    render(<App />)
+    const graphBtn = screen.getByLabelText('2D Function Grapher')
+    fireEvent.click(graphBtn)
+
+    expect(screen.getByRole('dialog', { name: '2D Function Grapher' })).toBeInTheDocument()
+    expect(screen.getByText('f(x) =')).toBeInTheDocument()
+
+    const closeBtn = screen.getByLabelText('Close grapher')
+    fireEvent.click(closeBtn)
+
+    expect(screen.queryByRole('dialog', { name: '2D Function Grapher' })).not.toBeInTheDocument()
+  })
 })

@@ -10,6 +10,8 @@ interface KeyboardHandlers {
   onInsertConstant: (c: string) => void
   onToggleAngleMode: () => void
   onToggleShortcutsModal: () => void
+  onUndo?: () => void
+  onRedo?: () => void
 }
 
 export function useKeyboard(handlers: KeyboardHandlers, enabled = true) {
@@ -17,7 +19,24 @@ export function useKeyboard(handlers: KeyboardHandlers, enabled = true) {
     if (!enabled) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Do not intercept if focus is inside an input, textarea or contenteditable element
+      // Handle global undo/redo shortcuts even if input has focus
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault()
+        if (e.shiftKey) {
+          handlers.onRedo?.()
+        } else {
+          handlers.onUndo?.()
+        }
+        return
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        e.preventDefault()
+        handlers.onRedo?.()
+        return
+      }
+
+      // Do not intercept standard keypad typing if focus is inside an input, textarea or contenteditable element
       const activeEl = document.activeElement
       if (
         activeEl &&
