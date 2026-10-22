@@ -2,7 +2,18 @@
 
 > A refined, mathematically rigorous scientific calculator web application built with precision, interactive expression editing, and zero `eval()` dependencies.
 
-Arc Calculator is an open-source, local-first scientific calculator inspired by the restraint, precision, and usability of classic desktop utilities and professional developer tools. It provides a reliable computing engine for students, developers, and engineers while maintaining a clean, accessible interface.
+[![CI Pipeline](https://github.com/ranaaryandev/arc-calculator/actions/workflows/ci.yml/badge.svg)](https://github.com/ranaaryandev/arc-calculator/actions/workflows/ci.yml)
+[![Deploy to GitHub Pages](https://github.com/ranaaryandev/arc-calculator/actions/workflows/deploy.yml/badge.svg)](https://github.com/ranaaryandev/arc-calculator/actions/workflows/deploy.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](LICENSE)
+
+🌐 **Live Demo:** [https://ranaaryandev.github.io/arc-calculator/](https://ranaaryandev.github.io/arc-calculator/)  
+📦 **GitHub Repository:** [https://github.com/ranaaryandev/arc-calculator](https://github.com/ranaaryandev/arc-calculator)
+
+---
+
+## Overview
+
+**Arc Calculator** is an open-source, local-first scientific calculator inspired by the restraint, precision, and usability of classic desktop utilities and professional developer tools. It provides a reliable computing engine for students, developers, and engineers while maintaining a clean, accessible interface.
 
 ---
 
@@ -44,6 +55,32 @@ Arc Calculator is an open-source, local-first scientific calculator inspired by 
 
 ---
 
+## Keyboard Shortcuts Reference
+
+| Shortcut Key | Action |
+| :--- | :--- |
+| `0` – `9`, `.` | Numeric digits and decimal point |
+| `+`, `-`, `*`, `/` | Basic arithmetic operators (displayed as `+`, `−`, `×`, `÷`) |
+| `^` | Exponentiation / Power ($x^y$) |
+| `%` | Percentage / Modulo |
+| `!` | Factorial ($n!$) |
+| `(`, `)` | Parentheses |
+| `Enter` or `=` | Calculate and commit to History |
+| `Backspace` | Delete character or function before cursor |
+| `Escape` | Clear current entry (`C`) |
+| `Delete` | All Clear (`AC`) |
+| `S` | Insert Sine (`sin(`) |
+| `C` | Insert Cosine (`cos(`) |
+| `T` | Insert Tangent (`tan(`) |
+| `R` | Insert Square Root (`sqrt(`) |
+| `L` | Insert Natural Logarithm (`ln(`) |
+| `P` | Insert Constant $\pi$ |
+| `E` | Insert Constant $e$ |
+| `D` | Toggle Angle Mode (`DEG` $\leftrightarrow$ `RAD`) |
+| `?` | Open Keyboard Shortcuts Guide |
+
+---
+
 ## Technology Stack
 
 - **Framework**: [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) (Strict Mode)
@@ -81,7 +118,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5174` in your browser.
+Open `http://localhost:5173` (or the port output in your terminal) in your browser.
 
 ---
 
@@ -105,21 +142,39 @@ npm run build
 
 ---
 
-## Roadmap
+## Supported Operations & Syntax
 
-- [x] Custom AST Tokenizer & Recursive Descent Parser (Zero `eval()`).
-- [x] Standard 4-column keypad hierarchy with prominent equals key.
-- [x] Collapsible scientific panel with DEG/RAD angular modes.
-- [x] Interactive cursor-aware expression editor.
-- [x] Configurable decimal precision (Auto, 2..8 decimals, Raw unrounded).
-- [x] Scientific constants catalog (Math, Physics, Chemistry with CODATA citations).
-- [x] Expanded unit converter catalog (Angle, Temp, Length, Area, Volume, Mass, Speed).
-- [x] Persistent calculation history with search and click-to-reuse.
-- [x] Memory operations (MC, MR, M+, M-, MS) with active display indicators.
-- [x] Full physical keyboard shortcut bindings.
-- [x] Automated CI pipeline (lint, typecheck, vitest).
-- [ ] Programmer mode (Hex, Decimal, Octal, Binary bitwise operations).
-- [ ] Responsive function plotting / 2D canvas graphing.
+| Operation | Syntax Example | Notes |
+| :--- | :--- | :--- |
+| Addition / Subtraction | `2 + 3`, `12 - 5` | Also supports unicode minus (`−`) |
+| Multiplication / Division | `6 * 7`, `15 / 3` | Supports `×`, `÷`, and implicit multiplication `2(3)` |
+| Exponentiation | `2^10`, `2^3^2` | Right-associative: $2^{(3^2)} = 512$ |
+| Percentage | `100 + 10%`, `50 * 20%` | $100 + 10\% = 110$; standalone `50%` $= 0.5$ |
+| Square Root / Cube Root | `sqrt(81)`, `cbrt(27)` | Real domain: negative roots rejected |
+| Arbitrary Root | `root(3, 27)` | Evaluates $\sqrt[n]{x}$ |
+| Factorial | `5!`, `0!` | Non-negative integers $\le 170$ |
+| Natural & Base-10 Log | `ln(e)`, `log10(1000)` | Domain: $x > 0$ |
+| Trigonometry | `sin(30)`, `cos(60)`, `tan(45)` | Evaluated according to active DEG/RAD mode |
+| Inverse Trigonometry | `asin(0.5)`, `acos(0.5)` | Domain: $-1 \le x \le 1$ |
+| Hyperbolic | `sinh(1)`, `cosh(1)`, `tanh(1)` | Standard hyperbolic trigonometry |
+
+---
+
+## Angle Mode Behavior (DEG / RAD)
+
+- **Degrees (`DEG`)**: Standard angular measurements ($0^\circ - 360^\circ$). Standard angles ($\sin(30^\circ) = 0.5$, $\cos(60^\circ) = 0.5$, $\cos(90^\circ) = 0$) are normalized to avoid floating-point drift. Singularities such as $\tan(90^\circ)$ and $\tan(270^\circ)$ immediately raise domain errors.
+- **Radians (`RAD`)**: Natural angular measurements in radians. Used for calculus and analytical math ($\sin(\pi/6) = 0.5$).
+- Switching modes updates pending trigonometric calculations immediately without corrupting entered numeric literals.
+
+---
+
+## Numerical Precision & Policy
+
+Arc Calculator relies on JavaScript's standard 64-bit IEEE-754 double-precision floating-point numbers.
+- **Significant Figures**: The display formats results up to 12 significant figures, automatically trimming trailing zeros.
+- **Scientific Notation**: Values with $|x| \ge 10^{14}$ or $0 < |x| < 10^{-7}$ are rendered in scientific exponential notation ($1.5\text{e}+15$).
+- **Precision Cleanup**: Guard tolerances eliminate binary artifacts like $0.1 + 0.2 = 0.30000000000000004$, formatting cleanly as `0.3`.
+- **Arbitrary Precision**: This application does not implement arbitrary-precision BigNum arithmetic; calculations are bound by IEEE-754 limits (values $> 1.7976931348623157 \times 10^{308}$ resolve to `Infinity`).
 
 ---
 
@@ -136,6 +191,24 @@ Arc Calculator operates under a zero-telemetry policy:
   - `arc-calc-memory`: Value stored in memory.
   - `arc-calc-history`: List of past calculations (capped at 50 items).
 - All stored state can be cleared at any time via the "Clear Local Storage Data" option in the **About** dialog.
+
+---
+
+## Roadmap
+
+- [x] Custom AST Tokenizer & Recursive Descent Parser (Zero `eval()`).
+- [x] Standard 4-column keypad hierarchy with prominent equals key.
+- [x] Collapsible scientific panel with DEG/RAD angular modes.
+- [x] Interactive cursor-aware expression editor.
+- [x] Configurable decimal precision (Auto, 2..8 decimals, Raw unrounded).
+- [x] Scientific constants catalog (Math, Physics, Chemistry with CODATA citations).
+- [x] Expanded unit converter catalog (Angle, Temp, Length, Area, Volume, Mass, Speed).
+- [x] Persistent calculation history with search and click-to-reuse.
+- [x] Memory operations (MC, MR, M+, M-, MS) with active display indicators.
+- [x] Full physical keyboard shortcut bindings.
+- [x] Automated CI pipeline (lint, typecheck, vitest).
+- [ ] Programmer mode (Hex, Decimal, Octal, Binary bitwise operations).
+- [ ] Responsive function plotting / 2D canvas graphing.
 
 ---
 
@@ -202,9 +275,16 @@ The application is configured for deployment as a static website on **GitHub Pag
 ### Deploying to GitHub Pages
 
 1. Push this repository to GitHub.
-2. In the GitHub repository settings, navigate to **Settings** $\rightarrow$ **Pages**.
+2. In your GitHub repository settings, navigate to **Settings** $\rightarrow$ **Pages**.
 3. Under **Build and deployment**, set the **Source** to **GitHub Actions**.
 4. The included workflow (`.github/workflows/deploy.yml`) will automatically build, test, and deploy the application on push to `main`.
+5. The live app will be available at: **[https://ranaaryandev.github.io/arc-calculator/](https://ranaaryandev.github.io/arc-calculator/)**
+
+---
+
+## Contributing
+
+Please review [CONTRIBUTING.md](CONTRIBUTING.md) for details on code style, testing requirements, and submission processes.
 
 ---
 
