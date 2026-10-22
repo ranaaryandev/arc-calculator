@@ -16,7 +16,7 @@ export const APP_CONFIG: AppConfig = {
   tagline: 'Precision Scientific & Standard Calculator',
   version: '1.0.0',
   description: 'A refined, mathematically rigorous scientific calculator web application built for precision, clarity, and daily utility.',
-  githubUrl: 'https://github.com/ranaaryan-work/arc-calculator',
+  githubUrl: 'https://github.com/ranaaryandev/arc-calculator',
   maxHistoryItems: 50,
   maxExpressionLength: 300,
   maxParenthesesDepth: 30,

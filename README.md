@@ -67,7 +67,7 @@ Arc Calculator is an open-source, local-first scientific calculator inspired by 
 
 ```bash
 # Clone the repository
-git clone https://github.com/ranaaryan-work/arc-calculator.git
+git clone https://github.com/ranaaryandev/arc-calculator.git
 cd arc-calculator
 
 # Install dependencies
