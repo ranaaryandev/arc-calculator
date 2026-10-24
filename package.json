@@ -1,8 +1,8 @@
 {
   "name": "arc-calculator",
   "private": true,
-  "version": "1.0.0",
-  "description": "A refined, mathematically rigorous scientific calculator web application.",
+  "version": "2.0.0",
+  "description": "A professional scientific calculator and engineering toolkit for university students.",
   "type": "module",
   "scripts": {
     "dev": "vite",

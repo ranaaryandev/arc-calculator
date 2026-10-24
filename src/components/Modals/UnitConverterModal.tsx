@@ -8,7 +8,18 @@ interface UnitConverterModalProps {
   onInsertResult: (val: string) => void
 }
 
-type Category = 'angle' | 'temp' | 'length' | 'area' | 'volume' | 'mass' | 'speed'
+type Category =
+  | 'angle'
+  | 'temp'
+  | 'length'
+  | 'area'
+  | 'volume'
+  | 'mass'
+  | 'speed'
+  | 'pressure'
+  | 'energy'
+  | 'power'
+  | 'force'
 
 export const UnitConverterModal: React.FC<UnitConverterModalProps> = ({
   isOpen,
@@ -135,6 +146,59 @@ export const UnitConverterModal: React.FC<UnitConverterModalProps> = ({
       return converted.toFixed(4).replace(/\.?0+$/, '')
     }
 
+    if (category === 'pressure') {
+      const toPa: Record<string, number> = {
+        pa: 1,
+        kpa: 1000,
+        mpa: 1e6,
+        bar: 100000,
+        psi: 6894.757,
+        atm: 101325,
+      }
+      const pa = val * (toPa[unitFrom] || 1)
+      const converted = pa / (toPa[unitTo] || 1)
+      return converted.toFixed(6).replace(/\.?0+$/, '')
+    }
+
+    if (category === 'energy') {
+      const toJ: Record<string, number> = {
+        j: 1,
+        kj: 1000,
+        cal: 4.184,
+        kcal: 4184,
+        wh: 3600,
+        kwh: 3.6e6,
+        btu: 1055.06,
+      }
+      const j = val * (toJ[unitFrom] || 1)
+      const converted = j / (toJ[unitTo] || 1)
+      return converted.toFixed(6).replace(/\.?0+$/, '')
+    }
+
+    if (category === 'power') {
+      const toW: Record<string, number> = {
+        w: 1,
+        kw: 1000,
+        mw: 1e6,
+        hp: 745.699872,
+      }
+      const w = val * (toW[unitFrom] || 1)
+      const converted = w / (toW[unitTo] || 1)
+      return converted.toFixed(6).replace(/\.?0+$/, '')
+    }
+
+    if (category === 'force') {
+      const toN: Record<string, number> = {
+        n: 1,
+        kn: 1000,
+        lbf: 4.448222,
+        kgf: 9.80665,
+      }
+      const n = val * (toN[unitFrom] || 1)
+      const converted = n / (toN[unitTo] || 1)
+      return converted.toFixed(6).replace(/\.?0+$/, '')
+    }
+
     return '0'
   }
 
@@ -170,12 +234,28 @@ export const UnitConverterModal: React.FC<UnitConverterModalProps> = ({
       setUnitFrom('kmh')
       setUnitTo('mph')
       setValFrom('100')
+    } else if (cat === 'pressure') {
+      setUnitFrom('bar')
+      setUnitTo('psi')
+      setValFrom('1')
+    } else if (cat === 'energy') {
+      setUnitFrom('kwh')
+      setUnitTo('j')
+      setValFrom('1')
+    } else if (cat === 'power') {
+      setUnitFrom('kw')
+      setUnitTo('hp')
+      setValFrom('1')
+    } else if (cat === 'force') {
+      setUnitFrom('kn')
+      setUnitTo('n')
+      setValFrom('1')
     }
   }
 
   return (
     <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="Unit Converter">
-      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '580px' }}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px' }}>
         <div className={styles.modalHeader}>
           <div className={styles.modalTitle}>
             <ArrowRightLeft size={18} aria-hidden="true" />
@@ -188,14 +268,28 @@ export const UnitConverterModal: React.FC<UnitConverterModalProps> = ({
 
         <div className={styles.modalBody}>
           {/* Category Tabs */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4 }}>
-            {(['angle', 'temp', 'length', 'area', 'volume', 'mass', 'speed'] as Category[]).map((cat) => (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {(
+              [
+                'angle',
+                'temp',
+                'length',
+                'area',
+                'volume',
+                'mass',
+                'speed',
+                'pressure',
+                'energy',
+                'power',
+                'force',
+              ] as Category[]
+            ).map((cat) => (
               <button
                 key={cat}
                 type="button"
                 className={styles.kbd}
                 style={{
-                  padding: '5px 2px',
+                  padding: '5px 8px',
                   textTransform: 'capitalize',
                   fontSize: '0.74rem',
                   background: category === cat ? 'var(--accent-subtle)' : 'var(--bg-surface-elevated)',
@@ -253,7 +347,7 @@ export const UnitConverterModal: React.FC<UnitConverterModalProps> = ({
                       <option value="in">Inches (in)</option>
                       <option value="yd">Yards (yd)</option>
                       <option value="mi">Miles (mi)</option>
-                      <option value="nmi">Nautical Miles (nmi)</option>
+                      <option value="nmi">Nautical Miles (NM)</option>
                     </>
                   )}
                   {category === 'area' && (
@@ -298,18 +392,57 @@ export const UnitConverterModal: React.FC<UnitConverterModalProps> = ({
                       <option value="fps">Feet / second (ft/s)</option>
                     </>
                   )}
+                  {category === 'pressure' && (
+                    <>
+                      <option value="bar">Bar (bar)</option>
+                      <option value="kpa">Kilopascals (kPa)</option>
+                      <option value="mpa">Megapascals (MPa)</option>
+                      <option value="pa">Pascals (Pa)</option>
+                      <option value="psi">Pounds / sq inch (psi)</option>
+                      <option value="atm">Standard Atmosphere (atm)</option>
+                    </>
+                  )}
+                  {category === 'energy' && (
+                    <>
+                      <option value="kwh">Kilowatt-hours (kWh)</option>
+                      <option value="j">Joules (J)</option>
+                      <option value="kj">Kilojoules (kJ)</option>
+                      <option value="cal">Calories (cal)</option>
+                      <option value="kcal">Kilocalories (kcal)</option>
+                      <option value="wh">Watt-hours (Wh)</option>
+                      <option value="btu">BTU</option>
+                    </>
+                  )}
+                  {category === 'power' && (
+                    <>
+                      <option value="kw">Kilowatts (kW)</option>
+                      <option value="w">Watts (W)</option>
+                      <option value="mw">Megawatts (MW)</option>
+                      <option value="hp">Mechanical Horsepower (hp)</option>
+                    </>
+                  )}
+                  {category === 'force' && (
+                    <>
+                      <option value="kn">Kilonewtons (kN)</option>
+                      <option value="n">Newtons (N)</option>
+                      <option value="lbf">Pounds-force (lbf)</option>
+                      <option value="kgf">Kilograms-force (kgf)</option>
+                    </>
+                  )}
                 </select>
               </div>
 
-              <span style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>=</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ArrowRightLeft size={16} style={{ color: 'var(--text-muted)' }} />
+              </div>
 
               <div>
                 <input
                   type="text"
                   readOnly
-                  className={styles.converterInput}
+                  className={`${styles.converterInput} ${styles.converterOutput}`}
                   value={convertedResult}
-                  aria-label="Converted output value"
+                  aria-label="Converted value"
                 />
                 <select
                   className={styles.converterSelect}
@@ -337,14 +470,14 @@ export const UnitConverterModal: React.FC<UnitConverterModalProps> = ({
                   {category === 'length' && (
                     <>
                       <option value="ft">Feet (ft)</option>
-                      <option value="in">Inches (in)</option>
                       <option value="m">Meters (m)</option>
                       <option value="km">Kilometers (km)</option>
                       <option value="cm">Centimeters (cm)</option>
                       <option value="mm">Millimeters (mm)</option>
+                      <option value="in">Inches (in)</option>
                       <option value="yd">Yards (yd)</option>
                       <option value="mi">Miles (mi)</option>
-                      <option value="nmi">Nautical Miles (nmi)</option>
+                      <option value="nmi">Nautical Miles (NM)</option>
                     </>
                   )}
                   {category === 'area' && (
@@ -387,6 +520,43 @@ export const UnitConverterModal: React.FC<UnitConverterModalProps> = ({
                       <option value="mps">Meters / second (m/s)</option>
                       <option value="knot">Knots (kn)</option>
                       <option value="fps">Feet / second (ft/s)</option>
+                    </>
+                  )}
+                  {category === 'pressure' && (
+                    <>
+                      <option value="psi">Pounds / sq inch (psi)</option>
+                      <option value="bar">Bar (bar)</option>
+                      <option value="kpa">Kilopascals (kPa)</option>
+                      <option value="mpa">Megapascals (MPa)</option>
+                      <option value="pa">Pascals (Pa)</option>
+                      <option value="atm">Standard Atmosphere (atm)</option>
+                    </>
+                  )}
+                  {category === 'energy' && (
+                    <>
+                      <option value="j">Joules (J)</option>
+                      <option value="kwh">Kilowatt-hours (kWh)</option>
+                      <option value="kj">Kilojoules (kJ)</option>
+                      <option value="cal">Calories (cal)</option>
+                      <option value="kcal">Kilocalories (kcal)</option>
+                      <option value="wh">Watt-hours (Wh)</option>
+                      <option value="btu">BTU</option>
+                    </>
+                  )}
+                  {category === 'power' && (
+                    <>
+                      <option value="hp">Mechanical Horsepower (hp)</option>
+                      <option value="kw">Kilowatts (kW)</option>
+                      <option value="w">Watts (W)</option>
+                      <option value="mw">Megawatts (MW)</option>
+                    </>
+                  )}
+                  {category === 'force' && (
+                    <>
+                      <option value="n">Newtons (N)</option>
+                      <option value="kn">Kilonewtons (kN)</option>
+                      <option value="lbf">Pounds-force (lbf)</option>
+                      <option value="kgf">Kilograms-force (kgf)</option>
                     </>
                   )}
                 </select>

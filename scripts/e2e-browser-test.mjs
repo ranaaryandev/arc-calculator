@@ -26,7 +26,7 @@ async function runE2E() {
     }
   }
 
-  console.log('\n--- Arc Calculator Playwright E2E Suite ---')
+  console.log('\n--- Arc Calculator 2.0 Playwright E2E Suite ---')
 
   await page.goto('http://localhost:4173', { waitUntil: 'networkidle' })
   await page.waitForSelector('main')
@@ -101,6 +101,50 @@ async function runE2E() {
     }
   })
 
+  await test('Physical Mode Selector opens, switches to Equations mode, and returns', async () => {
+    const modeBtn = await page.$('button[title*="Mode Selector"]')
+    if (!modeBtn) throw new Error('Mode selector button not found in header')
+    await modeBtn.click()
+
+    await page.waitForSelector('div[role="dialog"][aria-label="Calculator Mode Selector"]')
+    const eqOption = await page.$('button:has-text("Equations")')
+    if (!eqOption) throw new Error('Equations option not found in mode dialog')
+    await eqOption.click()
+
+    await page.waitForSelector('div[role="region"][aria-label="Equation Solver"]')
+
+    // Verify equation solver view is active
+    const eqHeader = await page.textContent('div[role="region"][aria-label="Equation Solver"]')
+    if (!eqHeader.includes('Equation Solver') || !eqHeader.includes('Quadratic')) {
+      throw new Error('Equation solver view contents not rendered properly')
+    }
+
+    // Return to main calculator
+    const backBtn = await page.$('button[aria-label="Return to Calculate mode"]')
+    if (!backBtn) throw new Error('Back to Calculator button not found')
+    await backBtn.click()
+
+    await page.waitForSelector('section[aria-label="Calculator display"]')
+  })
+
+  await test('Engineering Toolkit mode opens, calculates Ohm Law, and returns', async () => {
+    const engBtn = await page.$('button[aria-label="Engineering Toolkit"]')
+    if (!engBtn) throw new Error('Engineering Toolkit button not found in header')
+    await engBtn.click()
+
+    await page.waitForSelector('div[role="region"][aria-label="Engineering Toolkit"]')
+    const engContent = await page.textContent('div[role="region"][aria-label="Engineering Toolkit"]')
+    if (!engContent.includes("Ohm's Law") || !engContent.includes('Current & Power')) {
+      throw new Error('Ohm law calculator missing from Engineering Toolkit')
+    }
+
+    const backBtn = await page.$('button[aria-label="Return to Calculate mode"]')
+    if (!backBtn) throw new Error('Back to Calculator button not found')
+    await backBtn.click()
+
+    await page.waitForSelector('section[aria-label="Calculator display"]')
+  })
+
   await test('2D Function Grapher opens, loads multi-function presets, and closes', async () => {
     const graphBtn = await page.$('button[aria-label="2D Function Grapher"]')
     if (!graphBtn) throw new Error('Graph button not found')
@@ -108,7 +152,6 @@ async function runE2E() {
 
     await page.waitForSelector('div[role="dialog"][aria-label="2D Function Grapher"]')
 
-    // Click "sin & cos" preset
     const presetBtn = await page.$('button:has-text("sin & cos")')
     if (!presetBtn) throw new Error('Multi-function preset "sin & cos" not found')
     await presetBtn.click()
@@ -120,11 +163,9 @@ async function runE2E() {
       throw new Error(`Unexpected formula inputs: f1=${f1Val}, f2=${f2Val}`)
     }
 
-    // Canvas exists and is rendered
     const canvas = await page.$('canvas')
     if (!canvas) throw new Error('Canvas element missing in Grapher')
 
-    // Close graph modal
     const closeBtn = await page.$('button[aria-label="Close grapher"]')
     if (!closeBtn) throw new Error('Close button not found')
     await closeBtn.click()
@@ -146,6 +187,22 @@ async function runE2E() {
     const closeBtn = await page.$('button[aria-label="Close constants"]')
     if (closeBtn) await closeBtn.click()
     await page.waitForSelector('div[role="dialog"][aria-label="Scientific Constants"]', { state: 'detached' })
+  })
+
+  await test('Unit Converter modal includes pressure, energy, and force categories', async () => {
+    const converterBtn = await page.$('button[aria-label="Unit converter"]')
+    if (!converterBtn) throw new Error('Converter button not found')
+    await converterBtn.click()
+
+    await page.waitForSelector('div[role="dialog"][aria-label="Unit Converter"]')
+    const modalText = await page.textContent('div[role="dialog"]')
+    if (!modalText.includes('pressure') || !modalText.includes('energy') || !modalText.includes('force')) {
+      throw new Error('Extended engineering categories missing in Unit Converter')
+    }
+
+    const closeBtn = await page.$('button[aria-label="Close converter"]')
+    if (closeBtn) await closeBtn.click()
+    await page.waitForSelector('div[role="dialog"][aria-label="Unit Converter"]', { state: 'detached' })
   })
 
   await test('Mobile viewport (375x667) has no horizontal scroll or layout break', async () => {

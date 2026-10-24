@@ -153,4 +153,35 @@ it('supports multi-function plotting in 2D grapher modal', () => {
     fireEvent.click(removeFnBtn)
     expect(screen.queryByText('f₂(x) =')).not.toBeInTheDocument()
   })
+it('opens mode selector dialog and switches mode to Equations', () => {
+    render(<App />)
+    const modeBtn = screen.getByTitle(/Calculator Mode Selector/i)
+    fireEvent.click(modeBtn)
+
+    expect(screen.getByRole('dialog', { name: 'Calculator Mode Selector' })).toBeInTheDocument()
+    const eqOption = screen.getByRole('menuitem', { name: /Equations/i })
+    fireEvent.click(eqOption)
+
+    expect(screen.queryByRole('dialog', { name: 'Calculator Mode Selector' })).not.toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Equation Solver' })).toBeInTheDocument()
+    expect(screen.getByText('Quadratic Roots & Vertex')).toBeInTheDocument()
+
+    // Return to calculator
+    const backBtn = screen.getByLabelText('Return to Calculate mode')
+    fireEvent.click(backBtn)
+    expect(screen.getByLabelText('Calculator display')).toBeInTheDocument()
+  })
+
+  it('switches to Engineering Toolkit and navigates calculators', () => {
+    render(<App />)
+    const engBtn = screen.getByLabelText('Engineering Toolkit')
+    fireEvent.click(engBtn)
+
+    expect(screen.getByRole('region', { name: 'Engineering Toolkit' })).toBeInTheDocument()
+    expect(screen.getAllByText(/Ohm's Law & DC Power/i).length).toBeGreaterThanOrEqual(1)
+
+    const backBtn = screen.getByLabelText('Return to Calculate mode')
+    fireEvent.click(backBtn)
+    expect(screen.getByLabelText('Calculator display')).toBeInTheDocument()
+  })
 })

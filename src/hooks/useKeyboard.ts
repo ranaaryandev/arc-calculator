@@ -10,6 +10,7 @@ interface KeyboardHandlers {
   onInsertConstant: (c: string) => void
   onToggleAngleMode: () => void
   onToggleShortcutsModal: () => void
+  onToggleModeSelector?: () => void
   onUndo?: () => void
   onRedo?: () => void
 }
@@ -134,6 +135,9 @@ export function useKeyboard(handlers: KeyboardHandlers, enabled = true) {
       } else if (lower === 'd' && !e.shiftKey) {
         e.preventDefault()
         handlers.onToggleAngleMode()
+      } else if (lower === 'm' && !e.shiftKey) {
+        e.preventDefault()
+        handlers.onToggleModeSelector?.()
       }
     }
 

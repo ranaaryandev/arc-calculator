@@ -1,10 +1,12 @@
-# Arc Calculator
+# Arc Calculator 2.0
 
-> A refined, mathematically rigorous scientific calculator web application built with precision, interactive expression editing, and zero `eval()` dependencies.
+> A professional scientific calculator and engineering toolkit for university students, built with mathematical rigor, physical calculator workflows (inspired by Casio fx-991CW), interactive graphing, and zero `eval()` dependencies.
 
 [![CI Pipeline](https://github.com/ranaaryandev/arc-calculator/actions/workflows/ci.yml/badge.svg)](https://github.com/ranaaryandev/arc-calculator/actions/workflows/ci.yml)
 [![Deploy to GitHub Pages](https://github.com/ranaaryandev/arc-calculator/actions/workflows/deploy.yml/badge.svg)](https://github.com/ranaaryandev/arc-calculator/actions/workflows/deploy.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](LICENSE)
+[![Tests: 144 Passing](https://img.shields.io/badge/tests-144%20passing-brightgreen.svg)](https://github.com/ranaaryandev/arc-calculator)
+[![E2E: 10 Passing](https://img.shields.io/badge/E2E-10%20passing-teal.svg)](https://github.com/ranaaryandev/arc-calculator)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 🌐 **Live Demo:** [https://ranaaryandev.github.io/arc-calculator/](https://ranaaryandev.github.io/arc-calculator/)  
 📦 **GitHub Repository:** [https://github.com/ranaaryandev/arc-calculator](https://github.com/ranaaryandev/arc-calculator)
@@ -13,7 +15,9 @@
 
 ## Overview
 
-**Arc Calculator** is an open-source, local-first scientific calculator inspired by the restraint, precision, and usability of classic desktop utilities and professional developer tools. It provides a reliable computing engine for students, developers, and engineers while maintaining a clean, accessible interface.
+**Arc Calculator 2.0** is an open-source, local-first scientific calculator and engineering computation suite designed for engineering and science university students across all four years of study (Electrical, Mechanical, Civil, Computer, and Science).
+
+It combines the familiar ergonomics and physical workflow of modern academic scientific calculators (such as the Casio fx-991CW) with the speed, clarity, and interactive capabilities of modern web applications — featuring **11 dedicated calculator modes**, **12 discipline-specific engineering solvers**, **interactive 2D function graphing**, and **11 unit conversion categories**, all running client-side with ₹0 operating budget and zero backend dependencies.
 
 ---
 
@@ -25,33 +29,87 @@
 
 ---
 
-## Key Features
+## 11 Dedicated Calculator Modes
 
-- **Mathematically Sound & Safe AST Engine**: Expressions are tokenized and parsed into an Abstract Syntax Tree (AST) using a custom recursive descent parser with precedence climbing. User inputs are never passed to `eval()` or `new Function()`.
-- **Interactive 2D Function Grapher**: Plot single or multiple simultaneous mathematical curves ((x)$ and (x)$) with zoom, pan, origin reset, asymptotic discontinuity detection, and real-time hover coordinate tracing. Evaluated entirely via safe AST evaluation (zero eval()).\n- **Undo / Redo Expression Stack**: Full undo/redo history for formula editing via Ctrl+Z / Ctrl+Y and dedicated status bar action buttons.\n- **Interactive Expression Editor**: Click anywhere in the expression, select text, or use arrow keys to navigate the cursor and modify formulas directly.
-- **Unmistakable 4-Column Keypad**: The primary keypad is laid out in a clean 4-column grid (`7 8 9 ÷`, `4 5 6 ×`, `1 2 3 −`, `± 0 . +`, with `=` prominent), with `AC`, `C`, and `Backspace` grouped above.
-- **Collapsible Scientific Suite**: Toggle between a pure standard calculator and an expanded scientific panel on demand (automatically collapsed on narrow screens for single-handed mobile use).
-  - Powers ($x^y, x^2, x^3$), square roots ($\sqrt{x}$), cube roots ($\sqrt[3]{x}$), and arbitrary roots ($\sqrt[y]{x}$).
-  - Trigonometric ($\sin, \cos, \tan$) and inverse trigonometric ($\sin^{-1}, \cos^{-1}, \tan^{-1}$) functions with DEG/RAD support.
-  - Hyperbolic functions ($\sinh, \cosh, \tanh$).
-  - Factorials ($n!$) for non-negative integers up to $170!$.
-  - Natural logarithm ($\ln$), common logarithm ($\log_{10}$), base-2 logarithm ($\log_2$), and exponential ($e^x$).
-  - Constants $\pi$ and $e$ with high precision.
-- **Precision & Rounding Options**: Select between Auto (12 significant figures with IEEE-754 cleanup), fixed decimal places (2, 4, 6, 8 decimals), or raw unrounded floating-point values.
-- **Scientific Constants Catalog**: Instant reference and 1-click insertion for math, physics, and chemistry constants (Speed of Light, Planck's constant, Gravitational constant, Avogadro, Gas constant, etc.) with CODATA sources and SI units.
-- **Expanded Unit Converter Catalog**: Full conversion across 7 domains:
-  - **Angle**: Degrees, Radians, Gradians, Arcminutes, Arcseconds.
-  - **Temperature**: Celsius, Fahrenheit, Kelvin, Rankine.
-  - **Length**: Meters, Kilometers, Centimeters, Millimeters, Feet, Inches, Yards, Miles, Nautical Miles.
-  - **Area**: Square Meters, Square Feet, Hectares, Acres, Square Kilometers, Square Miles.
-  - **Volume**: Liters, Milliliters, Gallons (US), Quarts, Pints, Cups, Cubic Meters, Cubic Feet.
-  - **Mass**: Kilograms, Grams, Milligrams, Pounds, Ounces, Metric Tons.
-  - **Speed**: m/s, km/h, mph, knots, ft/s.
-- **Physical Keyboard First**: Complete keyboard mapping for all numeric entries, operators, brackets, and scientific functions with on-screen shortcuts help (`?`).
-- **Persistent Calculation History**: Automatically logs calculations to local storage with search, timestamp, and single-click reuse of previous expressions or results.
-- **Standard Memory Functions**: Full support for Memory Clear (`MC`), Memory Recall (`MR`), Memory Add (`M+`), Memory Subtract (`M-`), and Memory Store (`MS`) with active display pill indicators.
-- **100% Local-First & Zero Telemetry**: Operates entirely in the client browser with no external network requests, cookies, or analytics trackers.
-- **Light & Dark Themes**: Thoughtfully balanced color palettes with tabular numerals (`tabular-nums`) and support for system color preferences.
+Switch modes instantly via the top header **`[MODE]`** button or keyboard shortcut `M` (fx-991CW inspired grid):
+
+1. **Calculate Mode**: Standard and scientific arithmetic with collapsible scientific keys, memory store/recall (`MC`, `MR`, `M+`, `M−`, `MS`), and precision control.
+2. **Equation Solver**:
+   - **Quadratic Equations ($ax^2 + bx + c = 0$)**: Discriminant $\Delta$, real/complex conjugate roots ($u \pm vi$), vertex coordinates $(h, k)$.
+   - **Linear Equations ($ax + b = 0$)**: Exact root solution.
+   - **$2 \times 2$ Linear Systems**: Cramer's rule determinant method with singular matrix detection.
+   - **$3 \times 3$ Linear Systems**: Gaussian elimination with partial pivoting and back-substitution.
+3. **Matrix Calculator**:
+   - $2 \times 2$ and $3 \times 3$ interactive matrix grids.
+   - Operations: $A + B$, $A - B$, $A \times B$, scalar $k \cdot A$, transpose $A^T$, determinant $\det(A)$, trace $\text{tr}(A)$, and Gauss-Jordan matrix inversion $A^{-1}$.
+4. **Vector Calculator**:
+   - 2D and 3D vector coordinates ($u, v$).
+   - Operations: Magnitude $\|u\|$, addition $u+v$, subtraction $u-v$, dot product $u \cdot v$, 3D cross product $u \times v$, unit vector $\hat{u}$, angle between vectors $\theta$, and vector projection $\text{proj}_v u$.
+5. **Complex Numbers**:
+   - Rectangular form ($a + bi$) and Polar form ($r \angle \theta$) with live bidirectional conversions.
+   - Operations: $z_1 + z_2$, $z_1 - z_2$, $z_1 \times z_2$, $z_1 / z_2$, modulus $|z|$, principal argument $\text{Arg}(z)$, conjugate $\bar{z}$, and De Moivre exponentiation $z^n$.
+6. **Statistics**:
+   - 1-Variable Summary: $n$, $\sum x$, $\sum x^2$, mean $\bar{x}$, median, mode, sample variance $s^2$, population variance $\sigma^2$, sample standard deviation $s$, population standard deviation $\sigma$, min, max, range, and quartiles ($Q_1, Q_3, IQR$).
+   - 2-Variable Linear Regression: Least-squares regression slope ($m$), intercept ($c$), Pearson correlation coefficient ($r$), and coefficient of determination ($r^2$).
+7. **Probability & Distributions**:
+   - Permutations ($nPr$) and Combinations ($nCr$).
+   - Binomial Distribution: Probability mass function (PMF) and cumulative distribution function (CDF) for $B(n, p)$.
+   - Normal Distribution: Standard probability density function (PDF) and cumulative distribution function (CDF) using the Abramowitz & Stegun error function approximation.
+8. **Base-N & Digital Logic**:
+   - Synchronous multi-base display across Decimal (DEC), Binary (BIN), Octal (OCT), and Hexadecimal (HEX).
+   - Bitwise operations: `AND`, `OR`, `XOR`, `NOT`, Left Shift (`SHL`), and Right Shift (`SHR`).
+   - Configurable word sizes (8-bit, 16-bit, 32-bit) with two's complement signed evaluation.
+9. **Function Table**:
+   - Generates tabular evaluations of $f(x)$ across user-defined range $[x_{\text{start}}, x_{\text{end}}]$ with customizable step sizes, discontinuity detection, and safety limits.
+10. **2D Function Grapher**:
+    - Multi-curve plotting ($f(x)$ and $g(x)$) on an interactive canvas with zoom, pan, origin reset, asymptotic discontinuity detection, and coordinate tracing.
+11. **Engineering Toolkit**:
+    - Dedicated solvers for Electrical, Mechanical, Civil, and Computer Engineering (detailed below).
+
+---
+
+## University Engineering Toolkit
+
+12 verified engineering calculators with governing formulas, input parameters, SI units, and worked calculation steps:
+
+### Electrical Engineering
+- **Ohm's Law & DC Power**: Calculate Voltage ($V$), Current ($I$), Resistance ($R$), and Power ($P = VI = I^2 R = V^2/R$).
+- **Voltage Divider Rule**: Compute output voltage $V_{\text{out}} = V_{\text{in}} \cdot \frac{R_2}{R_1 + R_2}$.
+- **Series & Parallel Resistors**: Compute equivalent resistance for arbitrary resistor pairs.
+- **RC Time Constant & Cutoff Frequency**: Calculate time constant $\tau = RC$ and $-3\text{ dB}$ cutoff frequency $f_c = \frac{1}{2\pi RC}$.
+- **AC Series RLC Reactance & Impedance**: Inductive reactance $X_L = 2\pi f L$, capacitive reactance $X_C = \frac{1}{2\pi f C}$, total impedance $Z = \sqrt{R^2 + (X_L - X_C)^2}$, and phase angle $\phi$.
+
+### Mechanical Engineering
+- **Newton's Second Law**: Force $F = ma$ or acceleration $a = F/m$.
+- **Stress, Strain & Young's Modulus**: Normal stress $\sigma = F/A$, axial strain $\varepsilon = \Delta L / L_0$, and Young's modulus $E = \sigma / \varepsilon$.
+- **Mechanical Torque**: Torque $\tau = r F \sin(\theta)$ with lever arm and applied angle.
+- **Kinetic & Potential Energy**: Kinetic energy $KE = \frac{1}{2}mv^2$ and gravitational potential energy $PE = mgh$.
+- **Thermal Linear Expansion**: Length change $\Delta L = \alpha L_0 \Delta T$ and final length.
+
+### Civil Engineering
+- **Concrete Slab & Footing Volume**: Volume in cubic meters ($L \times W \times T$) and 50 kg cement bag estimation (1:2:4 nominal mix).
+- **Simply Supported Beam Max Moment & Shear**: Uniformly distributed load ($w$) over span ($L$): $M_{\max} = \frac{wL^2}{8}$, $V_{\max} = \frac{wL}{2}$.
+- **Slope, Grade & Incline Angle**: Rise and run to slope percentage ($S\%$), pitch ratio, and angle ($\theta = \arctan(\text{rise}/\text{run})$).
+
+### Computer Engineering
+- **Two's Complement Integer Converter**: 8-bit, 16-bit, and 32-bit binary two's complement representations with sign bit and decimal interpretation.
+- **Data Storage Unit Converter**: Clean conversions between Decimal SI (KB, MB, GB, TB) and Binary IEC (KiB, MiB, GiB, TiB).
+
+---
+
+## Expanded 11-Domain Unit Converter
+
+1. **Angle**: Degrees, Radians, Gradians, Arcminutes, Arcseconds.
+2. **Temperature**: Celsius, Fahrenheit, Kelvin, Rankine.
+3. **Length**: Meters, Kilometers, Centimeters, Millimeters, Feet, Inches, Yards, Miles, Nautical Miles.
+4. **Area**: Square Meters, Square Feet, Hectares, Acres, Square Kilometers, Square Miles.
+5. **Volume**: Liters, Milliliters, Gallons (US), Quarts, Pints, Cups, Cubic Meters, Cubic Feet.
+6. **Mass**: Kilograms, Grams, Milligrams, Pounds, Ounces, Metric Tons.
+7. **Speed**: m/s, km/h, mph, knots, ft/s.
+8. **Pressure**: Pascal (Pa), Kilopascal (kPa), Megapascal (MPa), Bar, PSI, Standard Atmosphere (atm), Millimeters of Mercury (mmHg).
+9. **Energy**: Joules (J), Kilojoules (kJ), Calories (cal), Kilocalories (kcal), Watt-hours (Wh), Kilowatt-hours (kWh), British Thermal Units (BTU), Electronvolts (eV).
+10. **Power**: Watts (W), Kilowatts (kW), Megawatts (MW), Horsepower (hp), BTU/hr.
+11. **Force**: Newtons (N), Kilonewtons (kN), Pound-force (lbf), Kilogram-force (kgf), Dynes (dyn).
 
 ---
 
@@ -60,15 +118,16 @@
 | Shortcut Key | Action |
 | :--- | :--- |
 | `0` – `9`, `.` | Numeric digits and decimal point |
-| `+`, `-`, `*`, `/` | Basic arithmetic operators (displayed as `+`, `−`, `×`, `÷`) |
+| `+`, `-`, `*`, `/` | Basic arithmetic operators (`+`, `−`, `×`, `÷`) |
 | `^` | Exponentiation / Power ($x^y$) |
-| `%` | Percentage / Modulo |
+| `%` | Modulo binary operator (`10 % 3 = 1`) / percentage |
 | `!` | Factorial ($n!$) |
 | `(`, `)` | Parentheses |
 | `Enter` or `=` | Calculate and commit to History |
 | `Backspace` | Delete character or function before cursor |
 | `Escape` | Clear current entry (`C`) |
 | `Delete` | All Clear (`AC`) |
+| `M` | Open Mode Selector Modal |
 | `S` | Insert Sine (`sin(`) |
 | `C` | Insert Cosine (`cos(`) |
 | `T` | Insert Tangent (`tan(`) |
@@ -83,14 +142,31 @@
 
 ---
 
+## Mathematical Precedence & Safety Standards
+
+- **Strict Precedence Hierarchy**:
+  1. Parentheses and grouped expressions: `(...)`
+  2. Postfix operators: `!` (factorial), `%` (percentage)
+  3. Exponentiation: `^` (right-associative: $2^{3^2} = 512$; exponentiation binds tighter than unary minus: `-2^2 = -4`, `(-2)^2 = 4`)
+  4. Unary operators: `+`, `-`
+  5. Multiplication and Division: `*`, `/`, `%` (modulo)
+  6. Addition and Subtraction: `+`, `-`
+- **Zero `eval()`**: User inputs are strictly processed through a custom recursive descent parser with precedence climbing. Never calls `eval()` or `new Function()`.
+- **Resource Bounds**: Enforces maximum input length of 1,000 characters, maximum token count of 500, parser depth limit of 40, and maximum consecutive unary operators of 20 to safeguard against adversarial payloads.
+- **Fail-Safe Storage**: `localStorage` wrapper gracefully catches quota limits and privacy restrictions (`QuotaExceededError`, `SecurityError`).
+
+---
+
 ## Technology Stack
 
 - **Framework**: [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) (Strict Mode)
 - **Build Tool**: [Vite 8](https://vitejs.dev/)
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **Styling**: Vanilla CSS Modules with strict CSS Design Tokens (`tokens.css`)
-- **Testing**: [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) (103 tests across 6 test suites + 7 Playwright E2E tests)
-- **Linter**: [Oxlint](https://oxc.rs/)
+- **Testing**:
+  - [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/) (144 tests across 8 suites)
+  - [Playwright](https://playwright.dev/) (10 E2E headless browser integration tests)
+- **Linter**: [Oxlint](https://oxc.rs/) (0 warnings, 0 errors across 59 files)
 - **Deployment**: GitHub Pages via GitHub Actions
 
 ---
@@ -120,99 +196,25 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5173` (or the port output in your terminal) in your browser.
+Open `http://localhost:5173` in your browser.
 
 ---
 
-## Testing & Quality Assurance
-
-Arc Calculator includes a comprehensive 103-test suite across 6 test suites plus 7 Playwright E2E tests covering arithmetic precedence, associativity, trigonometry, logarithms, domain errors, fuzzing/adversarial expressions, React hooks, storage failure resilience, and accessibility.
+## Verification & Testing
 
 ```bash
-# Run all unit and integration tests
+# Run 144 unit and solver tests
 npm test
 
-# Run tests in watch mode
-npm run test:watch
-
-# Run linter
+# Run Oxlint linter (0 warnings, 0 errors)
 npm run lint
 
-# Build for production with strict TypeScript checks
+# Run Playwright E2E browser tests (10 headless scenarios)
+npm run test:e2e
+
+# Build production bundle with strict TypeScript validation
 npm run build
 ```
-
----
-
-## Supported Operations & Syntax
-
-| Operation | Syntax Example | Notes |
-| :--- | :--- | :--- |
-| Addition / Subtraction | `2 + 3`, `12 - 5` | Also supports unicode minus (`−`) |
-| Unary Minus / Plus | `-2^2`, `(-2)^2` | Conventional mathematical precedence: `-2^2 = -4`, `(-2)^2 = 4` |
-| Multiplication / Division | `6 * 7`, `15 / 3` | Supports `×`, `÷`, and implicit multiplication `2(3)` |
-| Modulo | `10 % 3`, `mod(10, 3)` | Binary operator & functional modulo (`10 % 3 = 1`) |
-| Exponentiation | `2^10`, `2^3^2`, `2^-3` | Right-associative: $2^{(3^2)} = 512$; $2^{-3} = 0.125$ |
-| Percentage | `100 + 10%`, `50 * 20%` | $100 + 10\% = 110$; standalone `50%` $= 0.5$ |
-| Square Root / Cube Root | `sqrt(81)`, `cbrt(27)` | Real domain: `sqrt(-1)` produces clear domain error |
-| Arbitrary Root | `root(3, -8)`, `root(3, 27)` | Evaluates $\sqrt[n]{x}$; odd integer roots of negative numbers supported (`root(3, -8) = -2`) |
-| Factorial | `5!`, `0!` | Non-negative integers $\le 170$ |
-| Natural & Base-10 Log | `ln(e)`, `log10(1000)` | Domain: $x > 0$ |
-| Trigonometry | `sin(30)`, `cos(60)`, `tan(45)` | Evaluated according to active DEG/RAD mode |
-| Inverse Trigonometry | `asin(0.5)`, `acos(0.5)` | Domain: $-1 \le x \le 1$ |
-| Hyperbolic | `sinh(1)`, `cosh(1)`, `tanh(1)` | Standard hyperbolic trigonometry |
-
----
-
-## Angle Mode Behavior (DEG / RAD)
-
-- **Degrees (`DEG`)**: Standard angular measurements ($0^\circ - 360^\circ$). Standard angles ($\sin(30^\circ) = 0.5$, $\cos(60^\circ) = 0.5$, $\cos(90^\circ) = 0$) are normalized to avoid floating-point drift. Singularities such as $\tan(90^\circ)$ and $\tan(270^\circ)$ immediately raise domain errors.
-- **Radians (`RAD`)**: Natural angular measurements in radians. Used for calculus and analytical math ($\sin(\pi/6) = 0.5$).
-- Switching modes updates pending trigonometric calculations immediately without corrupting entered numeric literals.
-
----
-
-## Numerical Precision & Policy
-
-Arc Calculator relies on JavaScript's standard 64-bit IEEE-754 double-precision floating-point numbers.
-- **Significant Figures**: The display formats results up to 12 significant figures, automatically trimming trailing zeros.
-- **Scientific Notation**: Values with $|x| \ge 10^{14}$ or $0 < |x| < 10^{-7}$ are rendered in scientific exponential notation ($1.5\text{e}+15$).
-- **Precision Cleanup**: Guard tolerances eliminate binary artifacts like $0.1 + 0.2 = 0.30000000000000004$, formatting cleanly as `0.3`.
-- **Arbitrary Precision**: This application does not implement arbitrary-precision BigNum arithmetic; calculations are bound by IEEE-754 limits (values $> 1.7976931348623157 \times 10^{308}$ resolve to `Infinity`).
-
----
-
-## Privacy & Local Storage
-
-Arc Calculator operates under a zero-telemetry policy:
-- No user calculations or inputs are transmitted to any server.
-- The following keys are stored strictly in the user's browser `localStorage`:
-  - `arc-calc-theme`: Theme selection (`dark` or `light`).
-  - `arc-calc-angle-mode`: Angle mode (`DEG` or `RAD`).
-  - `arc-calc-show-scientific`: Scientific section visibility state.
-  - `arc-calc-decimals`: Configured decimal rounding precision.
-  - `arc-calc-unrounded`: Raw unrounded result toggle.
-  - `arc-calc-memory`: Value stored in memory.
-  - `arc-calc-history`: List of past calculations (capped at 50 items).
-- All stored state can be cleared at any time via the "Clear Local Storage Data" option in the **About** dialog.
-
----
-
-## Roadmap
-
-- [x] Custom AST Tokenizer & Recursive Descent Parser (Zero `eval()`).
-- [x] Standard 4-column keypad hierarchy with prominent equals key.
-- [x] Collapsible scientific panel with DEG/RAD angular modes.
-- [x] Interactive cursor-aware expression editor.
-- [x] Configurable decimal precision (Auto, 2..8 decimals, Raw unrounded).
-- [x] Scientific constants catalog (Math, Physics, Chemistry with CODATA citations).
-- [x] Expanded unit converter catalog (Angle, Temp, Length, Area, Volume, Mass, Speed).
-- [x] Persistent calculation history with search and click-to-reuse.
-- [x] Memory operations (MC, MR, M+, M-, MS) with active display indicators.
-- [x] Full physical keyboard shortcut bindings.
-- [x] Automated CI pipeline (lint, typecheck, vitest).
-- [ ] Programmer mode (Hex, Decimal, Octal, Binary bitwise operations).
-- [ ] Responsive function plotting / 2D canvas graphing.
 
 ---
 
@@ -221,76 +223,87 @@ Arc Calculator operates under a zero-telemetry policy:
 ```
 arc-calculator/
 ├── .github/
-│   ├── ISSUE_TEMPLATE/            # GitHub issue templates
 │   └── workflows/
 │       ├── ci.yml                 # Automated CI (lint, test, build)
 │       └── deploy.yml             # GitHub Actions deployment to Pages
 ├── docs/
-│   └── screenshots/               # Application screenshots
-├── public/
-│   ├── favicon.svg                # Minimalist SVG favicon
-│   └── manifest.json              # Web App Manifest
+│   ├── ARCHITECTURE.md            # System architecture & engine design
+│   ├── IMPLEMENTATION_PLAN.md     # Milestone execution roadmap
+│   ├── MATH_ACCURACY.md           # Numerical algorithms & accuracy proofs
+│   ├── PRODUCT_REQUIREMENTS.md    # Product requirements document (PRD)
+│   ├── TESTING.md                 # Test coverage & verification matrix
+│   └── screenshots/               # Desktop & mobile screenshots
+├── scripts/
+│   ├── capture-screenshots.mjs    # Automated Playwright screenshot generator
+│   └── e2e-browser-test.mjs       # Headless Playwright E2E test runner
 ├── src/
-│   ├── calculator/                # Decoupled mathematical calculation engine
-│   │   ├── constants.ts           # Math constants & operator precedence
+│   ├── calculator/                # AST expression calculation engine
+│   │   ├── constants.ts           # Math constants & precedence
 │   │   ├── evaluator.ts           # AST evaluator & domain safeguards
-│   │   ├── formatter.ts           # Precision & display formatting
-│   │   ├── index.ts               # Public calculation engine API
+│   │   ├── formatter.ts           # IEEE-754 display formatting
 │   │   ├── parser.ts              # Recursive descent parser
 │   │   ├── tokenizer.ts           # Tokenizer with implicit multiplication
-│   │   └── types.ts               # Core mathematical & AST types
-│   ├── components/                # React presentation components
-│   │   ├── Display/               # Expression editor, preview, result, & precision
-│   │   ├── Footer/                # Privacy notice & version
-│   │   ├── Header/                # Brand, angle switch, & tool triggers
+│   │   └── types.ts               # AST & token type definitions
+│   ├── components/                # React UI components
+│   │   ├── Display/               # Expression editor, preview, precision
+│   │   ├── Footer/                # Version & status
+│   │   ├── Header/                # Mode selector pill & quick access
 │   │   ├── History/               # Calculation history drawer
-│   │   ├── Keypad/                # Standard, scientific, & memory keys
-│   │   └── Modals/                # Shortcuts, About, Constants, & Converter
+│   │   ├── Keypad/                # Standard, scientific & memory keys
+│   │   ├── Modals/                # Mode selector, Grapher, Constants, Shortcuts
+│   │   └── Modes/                 # 11 Dedicated physical calculator views
+│   │       ├── BaseNCalculatorView.tsx
+│   │       ├── ComplexCalculatorView.tsx
+│   │       ├── EngineeringToolkitView.tsx
+│   │       ├── EquationSolverView.tsx
+│   │       ├── MatrixCalculatorView.tsx
+│   │       ├── Modes.module.css
+│   │       ├── ModeSelectorModal.tsx
+│   │       ├── ProbabilityView.tsx
+│   │       ├── StatisticsView.tsx
+│   │       ├── TableGeneratorView.tsx
+│   │       └── VectorCalculatorView.tsx
 │   ├── config/
-│   │   └── appConfig.ts           # Centralized configuration & naming
-│   ├── hooks/                     # Custom React state & interaction hooks
-│   │   ├── useCalculator.ts       # Calculator state machine, cursor & memory
-│   │   ├── useKeyboard.ts         # Physical keyboard listener
-│   │   ├── useLocalStorage.ts     # Resilient browser storage hook
+│   │   └── appConfig.ts           # Version 2.0 configuration
+│   ├── hooks/                     # Custom React hooks
+│   │   ├── useCalculator.ts       # State machine, cursor & memory
+│   │   ├── useKeyboard.ts         # Physical keyboard listener & shortcuts
+│   │   ├── useLocalStorage.ts     # Resilient browser storage
 │   │   └── useTheme.ts            # Dark/light theme manager
+│   ├── solvers/                   # Analytical engineering solvers
+│   │   ├── baseN.ts               # Multi-base & bitwise logic
+│   │   ├── complex.ts             # Rectangular & polar complex algebra
+│   │   ├── equations.ts           # Quadratic, linear, 2x2 & 3x3 systems
+│   │   ├── matrices.ts            # Determinant, inversion, matrix math
+│   │   ├── probability.ts         # Combinatorics, Binomial & Normal CDF
+│   │   ├── statistics.ts          # 1-Var summary & 2-Var linear regression
+│   │   ├── table.ts               # Tabular function evaluation
+│   │   └── vectors.ts             # 2D/3D dot, cross & projection
+│   ├── tools/                     # University Engineering Toolkit registry
+│   │   ├── registry.ts            # 12 verified discipline calculators
+│   │   └── types.ts               # Parameter & calculation output types
 │   ├── styles/
-│   │   ├── global.css             # Resets, animations, & accessibility
-│   │   └── tokens.css             # Design tokens (colors, radii, spacing)
-│   ├── test/                      # Vitest & RTL test suites (100 tests)
-│   │   ├── calculator-hook.test.ts# Hook integration tests
-│   │   ├── evaluator.test.ts      # Mathematical engine tests
-│   │   ├── formatter.test.ts      # Number formatting tests
-│   │   ├── regression-and-adversarial.test.ts # Operator precedence, modulo, & fuzz tests
-│   │   ├── setup.ts               # Test environment setup
-│   │   ├── storage.test.ts        # Storage failure resilience tests
-│   │   └── ui.test.tsx            # Component & accessibility tests
+│   │   ├── global.css             # Resets & accessibility styles
+│   │   └── tokens.css             # Theme design tokens
+│   ├── test/                      # 144 unit tests across 8 suites
 │   ├── App.tsx                    # Root application component
 │   └── main.tsx                   # DOM entry point
-├── index.html                     # HTML shell with Open Graph metadata
-├── package.json                   # Project metadata & dependencies
+├── index.html                     # HTML entry point with Open Graph metadata
+├── package.json                   # Project metadata & scripts
 ├── tsconfig.json                  # Strict TypeScript configuration
-└── vite.config.ts                 # Vite bundler & test configuration
+└── vite.config.ts                 # Bundler & test configuration
 ```
 
 ---
 
-## Deployment
+## Deployment to GitHub Pages
 
-The application is configured for deployment as a static website on **GitHub Pages** or **Cloudflare Pages**.
+The application is deployed as a static progressive web application on **GitHub Pages**.
 
-### Deploying to GitHub Pages
-
-1. Push this repository to GitHub.
-2. In your GitHub repository settings, navigate to **Settings** $\rightarrow$ **Pages**.
-3. Under **Build and deployment**, set the **Source** to **GitHub Actions**.
-4. The included workflow (`.github/workflows/deploy.yml`) will automatically build, test, and deploy the application on push to `main`.
-5. The live app will be available at: **[https://ranaaryandev.github.io/arc-calculator/](https://ranaaryandev.github.io/arc-calculator/)**
-
----
-
-## Contributing
-
-Please review [CONTRIBUTING.md](CONTRIBUTING.md) for details on code style, testing requirements, and submission processes.
+1. In GitHub repository settings, navigate to **Settings** $\rightarrow$ **Pages**.
+2. Under **Build and deployment**, set the **Source** to **GitHub Actions**.
+3. Pushes to `main` automatically run `.github/workflows/deploy.yml` which executes all tests, linter, builds the production bundle, and deploys it to GitHub Pages.
+4. Live application URL: **[https://ranaaryandev.github.io/arc-calculator/](https://ranaaryandev.github.io/arc-calculator/)**
 
 ---
 
