@@ -1,11 +1,26 @@
 import React from 'react'
-import { Sun, Moon, History, Keyboard, Info, Calculator, ArrowRightLeft, Atom, TrendingUp } from 'lucide-react'
+import {
+  Sun,
+  Moon,
+  History,
+  Keyboard,
+  Info,
+  Calculator,
+  ArrowRightLeft,
+  Atom,
+  TrendingUp,
+  LayoutGrid,
+  Wrench,
+} from 'lucide-react'
 import type { AngleMode } from '../../calculator/types'
 import type { Theme } from '../../hooks/useTheme'
+import type { CalculatorMode } from '../Modes/ModeSelectorModal'
 import { APP_CONFIG } from '../../config/appConfig'
 import styles from './Header.module.css'
 
 interface HeaderProps {
+  activeMode: CalculatorMode
+  onOpenModeSelector: () => void
   angleMode: AngleMode
   onToggleAngleMode: () => void
   theme: Theme
@@ -18,9 +33,26 @@ interface HeaderProps {
   onOpenUnitConverter: () => void
   onOpenConstants: () => void
   onOpenGraph?: () => void
+  onOpenEngineering?: () => void
+}
+
+const MODE_LABELS: Record<CalculatorMode, string> = {
+  calculate: 'Calculate',
+  equations: 'Equations',
+  matrices: 'Matrices',
+  vectors: 'Vectors',
+  complex: 'Complex',
+  statistics: 'Statistics',
+  probability: 'Probability',
+  baseN: 'Base-N',
+  table: 'Table',
+  converter: 'Converter',
+  engineering: 'Engineering',
 }
 
 export const Header: React.FC<HeaderProps> = ({
+  activeMode,
+  onOpenModeSelector,
   angleMode,
   onToggleAngleMode,
   theme,
@@ -33,7 +65,10 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenUnitConverter,
   onOpenConstants,
   onOpenGraph,
+  onOpenEngineering,
 }) => {
+  const modeLabel = MODE_LABELS[activeMode] || 'Calculate'
+
   return (
     <header className={styles.header}>
       <div className={styles.brand}>
@@ -43,6 +78,19 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       <div className={styles.controls}>
+        {/* Physical-style [MODE] Selector Trigger */}
+        <button
+          type="button"
+          className={`${styles.navBtn} ${activeMode !== 'calculate' ? styles.navBtnActive : ''}`}
+          onClick={onOpenModeSelector}
+          aria-label={`Current Mode: ${modeLabel}. Click to switch calculator mode`}
+          title="Calculator Mode Selector (fx-991CW inspired)"
+          style={{ fontWeight: 600 }}
+        >
+          <LayoutGrid size={15} aria-hidden="true" />
+          <span className={styles.btnLabel}>Mode: {modeLabel}</span>
+        </button>
+
         {/* DEG / RAD segmented switch */}
         <div className={styles.modeSwitch} role="group" aria-label="Angle unit selection">
           <button
@@ -64,6 +112,18 @@ export const Header: React.FC<HeaderProps> = ({
             RAD
           </button>
         </div>
+
+        {/* Engineering Tools Quick Access */}
+        <button
+          type="button"
+          className={`${styles.navBtn} ${activeMode === 'engineering' ? styles.navBtnActive : ''}`}
+          onClick={onOpenEngineering}
+          aria-label="Engineering Toolkit"
+          title="Open Engineering Toolkit (EE, ME, CE, CS)"
+        >
+          <Wrench size={15} aria-hidden="true" />
+          <span className={styles.btnLabel}>Engineering</span>
+        </button>
 
         {/* Unit Converter Trigger */}
         <button

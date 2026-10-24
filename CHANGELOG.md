@@ -5,6 +5,48 @@ All notable changes to **Arc Calculator** will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-10-24
+
+### Added
+- **Physical Calculator Mode Paradigm (fx-991CW Inspired)**:
+  - Global `[MODE]` button in header and modal selector (`ModeSelectorModal.tsx`) with 11 dedicated functional modes and numbered physical shortcuts (1–9).
+  - Mode switching with clean `[← Back to Calculator]` breadcrumb navigation that preserves underlying calculator memory and state.
+- **Dedicated Analytical Equation Solvers**:
+  - Quadratic Equation Solver ($ax^2 + bx + c = 0$): Discriminant analysis ($\Delta$), real roots, complex conjugate roots ($u \pm vi$), and vertex coordinates $(h, k)$.
+  - Linear Single-Variable Solver ($ax + b = 0$).
+  - $2 \times 2$ Linear Systems Solver: Cramer's rule determinant method with singular matrix detection.
+  - $3 \times 3$ Linear Systems Solver: Full Gaussian elimination with partial pivoting and back-substitution.
+- **Matrix & Linear Algebra Engine**:
+  - $2 \times 2$ and $3 \times 3$ interactive matrix inputs with operations: Matrix Addition ($A + B$), Subtraction ($A - B$), Multiplication ($A \times B$), Scalar Multiplication ($k \cdot A$), Transpose ($A^T$), Determinant ($\det(A)$), Trace ($\text{tr}(A)$), and Gauss-Jordan Matrix Inversion ($A^{-1}$) with singularity checks.
+- **2D & 3D Vector Mechanics**:
+  - Magnitude calculation ($\|v\|$), vector addition ($u+v$), subtraction ($u-v$), dot product ($u \cdot v$), 3D cross product ($u \times v$), unit normalization ($\hat{u}$), angle between vectors ($\theta$), and vector projection ($\text{proj}_v u$).
+- **Complex Number Engine**:
+  - Rectangular ($a + bi$) and Polar ($r \angle \theta$) dual-representation support with synchronized conversions.
+  - Addition, subtraction, multiplication, division, modulus ($|z|$), principal argument ($\text{Arg}(z)$ in degrees and radians), complex conjugate ($\bar{z}$), and integer exponentiation via De Moivre's Theorem ($z^n = r^n (\cos n\theta + i \sin n\theta)$).
+- **Engineering Statistics & Probability Solvers**:
+  - 1-Variable Summary Statistics: $n$, $\sum x$, $\sum x^2$, arithmetic mean ($\bar{x}$), median, mode, sample variance ($s^2$), population variance ($\sigma^2$), sample standard deviation ($s$), population standard deviation ($\sigma$), min, max, range, and quartiles ($Q_1, Q_3, IQR$).
+  - 2-Variable Linear Regression: Least squares slope ($m$), intercept ($c$), Pearson correlation coefficient ($r$), and coefficient of determination ($r^2$).
+  - Probability & Combinatorics: Permutations ($nPr$), Combinations ($nCr$), Factorials ($n!$), Binomial PMF & CDF ($B(n, p)$), and Normal PDF & CDF with Abramowitz & Stegun error function approximation.
+- **Computer Science & Digital Logic (Base-N)**:
+  - Synchronous multi-base conversion across Decimal, Binary, Octal, and Hexadecimal.
+  - Bitwise operations: `AND`, `OR`, `XOR`, `NOT`, Left Shift (`SHL`), and Right Shift (`SHR`).
+  - Configurable word sizes (8-bit, 16-bit, 32-bit) with signed two's complement interpretation.
+- **Function Table Generator**:
+  - Tabular evaluation of $f(x)$ across user-defined $[x_{\text{start}}, x_{\text{end}}]$ and step intervals, with asymptotic discontinuity detection and 500-row safety bounds.
+- **University Engineering Toolkit**:
+  - 12 verified engineering calculators across 4 core disciplines (Electrical, Mechanical, Civil, Computer) with live parameter updates, SI units, and worked formula steps:
+    - *Electrical*: Ohm's Law & DC Power ($V, I, R, P$), Voltage Divider Rule, Series & Parallel Resistors, RC Time Constant & Cutoff Frequency ($f_c$), AC Series RLC Reactance & Impedance ($Z$).
+    - *Mechanical*: Newton's Second Law ($F=ma$), Stress, Strain & Young's Modulus ($E$), Mechanical Torque ($\tau$), Kinetic & Gravitational Potential Energy, Thermal Linear Expansion ($\Delta L$).
+    - *Civil*: Concrete Slab & Footing Volume Estimator, Simply Supported Beam Max Moment & Shear ($wL^2/8$, $wL/2$), Slope, Grade & Incline Angle.
+    - *Computer*: Two's Complement Integer Converter, Data Storage Unit Converter (Decimal SI vs. Binary IEC).
+- **Expanded Unit Converter**:
+  - Added 4 engineering domains: Pressure (Pa, kPa, MPa, bar, psi, atm, mmHg), Energy (J, kJ, cal, kcal, Wh, kWh, BTU, eV), Power (W, kW, MW, hp, BTU/h), and Force (N, kN, lbf, kgf, dyn). Total 11 conversion categories.
+- **Testing & Verification**:
+  - Added 41 new unit and integration tests (totaling 144 tests across 8 suites, 100% passing).
+  - Added 3 new Playwright E2E tests (totaling 10 tests across desktop and mobile, 100% passing).
+  - Maintained zero Oxlint warnings across 59 files.
+  - Detailed engineering documentation in `docs/PRODUCT_REQUIREMENTS.md`, `docs/ARCHITECTURE.md`, `docs/IMPLEMENTATION_PLAN.md`, `docs/MATH_ACCURACY.md`, and `docs/TESTING.md`.
+
 ## [1.1.0] - 2026-10-23
 
 ### Added
